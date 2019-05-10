@@ -1,0 +1,299 @@
+{
+    "appid": "4a7da742-927a-40a9-bd50-1a61c2ff78df",
+    "name": "Ixia Network Packet Broker",
+    "description": "This ixia NPB App supports a variety of actions on network packet broker platform. This App has been tested with Vision One.",
+    "type": "network device",
+    "product_vendor": "Ixia",
+    "logo": "ixianetworkpacketbroker.svg",
+    "logo_dark": "ixianetworkpacketbroker_dark.svg",
+    "product_name": "Network Packet Broker",
+    "product_version_regex": ".*",
+    "publisher": "Splunk",
+    "license": "Copyright (c) 2019 Splunk Inc.",
+    "app_version": "1.0.1",
+    "utctime_updated": "2019-01-07T16:28:57.969210Z",
+    "package_name": "phantom_ixianetworkpacketbroker",
+    "main_module": "ixianetworkpacketbroker_connector.py",
+    "min_phantom_version": "4.0.1068",
+    "app_wizard_version": "1.0.0",
+    "configuration": {
+        "endpoint": {
+            "description": "Endpoint (e.g.  https://10.1.16.31:8000/api/)",
+            "verbose":"Endpoint: Ixia Device URL including the port, e.g.  https://10.1.16.31:8000/api/",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "",
+            "order": 0
+        },
+        "username": {
+            "description": "Username (e.g. admin)",
+            "verbose": "Username of the privileged user. e.g. admin",
+            "data_type": "string",
+            "required": true,
+            "value_list": [],
+            "default": "",
+            "order": 1
+        },
+        "password": {
+            "description": "Password (e.g. admin)",
+            "verbose": "Password of the privileged user. e.g. admin",
+            "data_type": "password",
+            "required": true,
+            "order": 2
+        },
+        "verify_cert": {
+            "description": "Verify Server SSL certificate",
+            "data_type": "boolean",
+            "required": false,
+            "default": false,
+            "order": 3
+        }
+    },
+    "actions": [
+        {
+            "action": "test connectivity",
+            "identifier": "test_connectivity",
+            "description": "Validate the asset configuration for connectivity using supplied configuration",
+            "verbose": "",
+            "type": "test",
+            "read_only": true,
+            "parameters": {},
+            "output": [],
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "list sessions",
+            "identifier": "list_sessions",
+            "description": "List the sessions currently available on the Monitoring node",
+            "verbose": "",
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {},
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "delete filter",
+            "identifier": "delete_filter",
+            "description": "Remove a filter from the system.",
+            "verbose": "Remove a filter from the system. ",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "id": {
+                    "description": "Filter Identifier",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0
+                },
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss?",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "default": "",
+                    "order": 1
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.id",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.allowtemporarydataloss",
+                    "data_type": "boolean",
+                    "contains": [],
+                    "column_name": "allowtemporarydataloss",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "create filter",
+            "identifier": "create_filter",
+            "description": "Create a new filter in the system.",
+            "verbose": "Create a new filter in the system.",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "payload": {
+                    "description": "JSON containing field key/value",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "value_list": [],
+                    "default": "",
+                    "order": 0
+                },
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss?",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "contains": [],
+                    "default": true,
+                    "order": 1
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.payload",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "payload",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.allowtemporarydataloss",
+                    "data_type": "boolean",
+                    "contains": [],
+                    "column_name": "allowtemporarydataloss",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "list filters",
+            "identifier": "list_filters",
+            "description": "Fetch a list containing the summaries for all the filters in the system.",
+            "verbose": "Fetch a list containing the summaries for all the filters in the system.",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {},
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "restart",
+            "identifier": "restart",
+            "description": "restart ixia vision one",
+            "verbose": "This action safely restarts an NTO, a union or a member.",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {},
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric"
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        }
+    ]
+}
