@@ -34,14 +34,9 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Do note that the app json defines the asset config, so please
         # modify this as you deem fit.
         self._base_url = None
-
-        config = self.get_config()
-
-        self._endpoint = config['endpoint']
-        self._username = config['username']
-        self._password = config['password']
-        self._verify = config['verify_cert']
-        self._base_url = '{0}'.format(config['endpoint'])
+        self._username = None
+        self._password = None
+        self._verify = None
 
     def _process_empty_response(self, response, action_result):
 
@@ -159,23 +154,21 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         self.save_progress("Connecting to endpoint")
 
         # make rest call
-        ret_val, response = self._make_rest_call(self._base_url + '/api/actions/get_login_info', action_result, params=None, headers=None)
-
-        if (response.status_code != 200):
-            self.save_progress("Test Connectivity Failed.")
+        ret_val, response = self._make_rest_call('/api/actions/get_login_info', action_result, params=None, headers=None)
 
         if (phantom.is_fail(ret_val)):
             # the call to the 3rd party device or service failed, action result should contain all the error details
             # for now the return is commented out, but after implementation, return from here
-            self.save_progress("Test Connectivity Failed.")
-            # return action_result.get_status()
+            self.save_progress("Test Connectivity Failed")
+            return action_result.get_status()
 
         # Return success
         # self.save_progress("Test Connectivity Passed")
         # return action_result.set_status(phantom.APP_SUCCESS)
 
         # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
+        self.save_progress("Test Connectivity Passed")
+        return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_list_sessions(self, param):
 
@@ -440,8 +433,11 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Optional values should use the .get() function
         optional_config_name = config.get('optional_config_name')
         """
+        self._username = config['username']
+        self._password = config['password']
+        self._verify = config['verify_cert']
 
-        self._base_url = config.get('base_url')
+        self._base_url = config['endpoint']
 
         return phantom.APP_SUCCESS
 
