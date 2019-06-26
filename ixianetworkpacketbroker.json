@@ -19,7 +19,7 @@
     "configuration": {
         "endpoint": {
             "description": "Endpoint (e.g.  https://10.1.16.31:8000/api/)",
-            "verbose":"Endpoint: Ixia Device URL including the port, e.g.  https://10.1.16.31:8000/api/",
+            "verbose": "Endpoint: Ixia Device URL including the port, e.g.  https://10.1.16.31:8000/api/",
             "data_type": "string",
             "required": true,
             "value_list": [],
@@ -36,7 +36,7 @@
             "order": 1
         },
         "password": {
-            "description": "Password (e.g. admin)",
+            "description": "Password",
             "verbose": "Password of the privileged user. e.g. admin",
             "data_type": "password",
             "required": true,
@@ -98,19 +98,17 @@
         {
             "action": "delete filter",
             "identifier": "delete_filter",
-            "description": "Remove a filter from the system.",
-            "verbose": "Remove a filter from the system. ",
+            "description": "Remove a filter from the system",
+            "verbose": "Remove a filter from the system",
             "type": "generic",
             "read_only": false,
             "parameters": {
-                "id": {
+                "filter_id_or_name": {
                     "description": "Filter Identifier",
                     "data_type": "string",
                     "required": true,
                     "primary": false,
                     "contains": [],
-                    "value_list": [],
-                    "default": "",
                     "order": 0
                 },
                 "allowtemporarydataloss": {
@@ -118,14 +116,358 @@
                     "data_type": "boolean",
                     "required": false,
                     "primary": false,
-                    "contains": [],
-                    "default": "",
                     "order": 1
                 }
             },
             "output": [
                 {
-                    "data_path": "action_result.parameter.id",
+                    "data_path": "action_result.parameter.filter_id_or_name",
+                    "data_type": "string",
+                    "column_name": "id",
+                    "column_order": 0,
+                    "example_values": [
+                        "41"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.allowtemporarydataloss",
+                    "data_type": "boolean",
+                    "column_name": "allowtemporarydataloss",
+                    "column_order": 1,
+                    "example_values": [
+                        false,
+                        true
+                    ]
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2,
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Deleted successfully"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.num_data",
+                    "data_type": "string",
+                    "example_values": [
+                        "One item deleted succussfully"
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "update mode",
+            "identifier": "update_mode",
+            "description": "Update mode of a filter",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "filter_id_or_name": {
+                    "description": "Filter Identifier",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "order": 0
+                },
+                "mode": {
+                    "description": "Mode of a filter",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "value_list": [
+                        "Pass All",
+                        "Pass By Criteria",
+                        "PBC Unmatched",
+                        "Disable",
+                        "Deny By Criteria",
+                        "DBC Matched"
+                    ],
+                    "order": 1
+                },
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss?",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "order": 2
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Filter mode updated successfully"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.allowtemporarydataloss",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.mode",
+                    "data_type": "string",
+                    "example_values": [
+                        "Pass All"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.filter_id_or_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "20"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.num_data",
+                    "data_type": "string",
+                    "example_values": [
+                        "Filter mode updated successfully"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "update operator",
+            "identifier": "update_operator",
+            "description": "Update operator of a filter",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "filter_id_or_name": {
+                    "description": "Filter Identifier",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "order": 0
+                },
+                "operator": {
+                    "description": "Operator of a filter",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "value_list": [
+                        "AND",
+                        "OR"
+                    ],
+                    "order": 1
+                },
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss?",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "order": 2
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Filter operator updated successfully"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.operator",
+                    "data_type": "string",
+                    "example_values": [
+                        "OR"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.allowtemporarydataloss",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.filter_id_or_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "122"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "update mac",
+            "identifier": "update_mac",
+            "description": "Update mac of a filter",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "filter_id": {
+                    "description": "Filter Identifier",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "order": 0
+                },
+                "type": {
+                    "description": "Type",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "value_list": [
+                        "Source",
+                        "Destination",
+                        "Source or Destination",
+                        "Unidirectional Flow",
+                        "Bidirectional Flow"
+                    ],
+                    "order": 1
+                },
+                "Administration": {
+                    "description": "Admin type",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "value_list": [
+                        "Don't Care",
+                        "Local",
+                        "Universal(Globally Unique)"
+                    ],
+                    "order": 1
+                },
+                "Destination Address": {
+                    "description": "Type",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "value_list": [
+                        "Don't Care",
+                        "Individual(Unicast)",
+                        "Group(Multicast/Broadcast)"
+                    ],
+                    "order": 1
+                },
+                "source_mac": {
+                    "description": "Source MAC addresses to be added",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "order": 2
+                },
+                "destination_mac": {
+                    "description": "Destination MAC addresses to be added",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "order": 3
+                },
+                "source_or_destination_mac": {
+                    "description": "Destination MAC addresses to be added",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "order": 4
+                },
+                "overwrite": {
+                    "description": "",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "default": false,
+                    "order": 5
+                },
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss?",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "order": 6
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.filter_id",
                     "data_type": "string",
                     "contains": [],
                     "column_name": "id",
@@ -155,6 +497,254 @@
                 {
                     "data_path": "summary.total_objects_successful",
                     "data_type": "numeric"
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "update ip",
+            "identifier": "update_ip",
+            "description": "Update ip of a filter",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "filter_id_or_name": {
+                    "description": "Filter Identifier",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "order": 0
+                },
+                "type": {
+                    "description": "Type",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "value_list": [
+                        "Source",
+                        "Destination",
+                        "Source or Destination",
+                        "Unidirectional Flow",
+                        "Bidirectional Flow"
+                    ],
+                    "order": 1
+                },
+                "source_ip": {
+                    "description": "Source IP addresses to be added",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "order": 2
+                },
+                "destination_ip": {
+                    "description": "Destination IP addresses to be added",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "order": 3
+                },
+                "source_or_destination_ip": {
+                    "description": "Destination IP addresses to be added",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "order": 4
+                },
+                "overwrite": {
+                    "description": "",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "default": false,
+                    "order": 5
+                },
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss?",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "order": 6
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Filter's IP updated successfully"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.destination_ip",
+                    "data_type": "string",
+                    "example_values": [
+                        "[[\"12.12.12.12/14.14.14.14\"]]"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.allowtemporarydataloss",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.filter_id_or_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "122"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.type",
+                    "data_type": "string",
+                    "example_values": [
+                        "Destination"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.overwrite",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "update vlan replacement",
+            "identifier": "update_vlan_replacement",
+            "description": "Updates the vlan replacement settings of a filter",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "filter_id_or_name": {
+                    "description": "Filter Identifier",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "order": 0
+                },
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss?",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "order": 3
+                },
+                "vlan_id": {
+                    "description": "VLAN Identifier",
+                    "data_type": "numeric",
+                    "required": true,
+                    "primary": false,
+                    "order": 1
+                },
+                "enable": {
+                    "description": "Enables",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "default": true,
+                    "order": 2
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "VLAN replacement settings updated successfully"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.enable",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.allowtemporarydataloss",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.vlan_id",
+                    "data_type": "numeric",
+                    "example_values": [
+                        2
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.filter_id_or_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "19"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.num_data",
+                    "data_type": "string",
+                    "example_values": [
+                        "VLAN replacement settings updated successfully"
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 }
             ],
             "render": {
@@ -234,15 +824,128 @@
             "identifier": "list_filters",
             "description": "Fetch a list containing the summaries for all the filters in the system.",
             "verbose": "Fetch a list containing the summaries for all the filters in the system.",
-            "type": "generic",
-            "read_only": false,
-            "parameters": {},
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss?",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "order": 0
+                }
+            },
             "output": [
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.allowtemporarydataloss",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.id",
+                    "data_type": "numeric",
+                    "example_values": [
+                        17
+                    ],
+                    "column_name": "Filter ID",
                     "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.name",
+                    "data_type": "string",
+                    "example_values": [
+                        "F3updated"
+                    ],
+                    "column_name": "Filter Name",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Num data: 98"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.num_data",
+                    "data_type": "numeric",
+                    "example_values": [
+                        98
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "describe filter",
+            "identifier": "describe_filter",
+            "description": "Fetch a list containing the summaries for all the filters in the system",
+            "type": "investigate",
+            "read_only": true,
+            "parameters": {
+                "filter_id_or_name": {
+                    "description": "Filter Identifier",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "order": 0
+                },
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss?",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "order": 1
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.filter_id_or_name",
+                    "data_type": "string",
+                    "contains": [],
+                    "column_name": "id",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.parameter.allowtemporarydataloss",
+                    "data_type": "boolean",
+                    "contains": [],
+                    "column_name": "allowtemporarydataloss",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "column_name": "status",
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.message",

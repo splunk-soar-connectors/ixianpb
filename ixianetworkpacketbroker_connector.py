@@ -8,11 +8,13 @@
 import phantom.app as phantom
 from phantom.base_connector import BaseConnector
 from phantom.action_result import ActionResult
+from ixianetworkpacketbroker_consts import *
 
 # Usage of the consts file is recommended
 # from ixianetworkpacketbroker_consts import *
 import requests
 import json
+import base64
 from bs4 import BeautifulSoup
 
 
@@ -37,6 +39,9 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         self._username = None
         self._password = None
         self._verify = None
+        self._res_headers = None
+        self._oauth_access_token = None
+        self._proxy = None
 
     def _process_empty_response(self, response, action_result):
 
@@ -115,10 +120,20 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
-    def _make_rest_call(self, endpoint, action_result, method="get", **kwargs):
-        # **kwargs can be any additional parameters that requests.request accepts
+    def _make_rest_call_oauth2(self, endpoint, action_result, verify=True, headers=None, params=None, data=None, json=None, method="get"):
+        """ Function that makes the REST call to the app.
 
-        config = self.get_config()
+        :param endpoint: REST endpoint that needs to appended to the service address
+        :param action_result: object of ActionResult class
+        :param headers: request headers
+        :param params: request parameters
+        :param data: request body
+        :param json: JSON object
+        :param method: GET/POST/PUT/DELETE/PATCH (Default will be GET)
+        :param verify: verify server certificate (Default True)
+        :return: status phantom.APP_ERROR/phantom.APP_SUCCESS(along with appropriate message),
+        response obtained by making an API call
+        """
 
         resp_json = None
 
@@ -127,19 +142,90 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         except AttributeError:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Invalid method: {0}".format(method)), resp_json)
 
-        # Create a URL to connect to
-        url = self._base_url + endpoint
-
         try:
-            r = request_func(
-                            url,
-                            # auth=(username, password),  # basic authentication
-                            verify=config.get('verify_server_cert', False),
-                            **kwargs)
+            r = request_func(endpoint, json=json, data=data, proxies=self._proxy, headers=headers, verify=verify, params=params)
         except Exception as e:
-            return RetVal(action_result.set_status( phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(str(e))), resp_json)
+            return RetVal(action_result.set_status(phantom.APP_ERROR, "Error Connecting to server. Details: {0}"
+                                                   .format(str(e))), resp_json)
 
+        self._res_headers = r.headers
         return self._process_response(r, action_result)
+
+    def _make_rest_call_helper_oauth2(self, action_result, endpoint, verify=True, headers=None, params=None, data=None, json=None, method="get"):
+        """ Function that helps setting REST call to the app.
+
+        :param endpoint: REST endpoint that needs to appended to the service address
+        :param action_result: object of ActionResult class
+        :param headers: request headers
+        :param params: request parameters
+        :param data: request body
+        :param json: JSON object
+        :param method: GET/POST/PUT/DELETE/PATCH (Default will be GET)
+        :param verify: verify server certificate (Default True)
+        :return: status phantom.APP_ERROR/phantom.APP_SUCCESS(along with appropriate message),
+        response obtained by making an API call
+        """
+
+        url = "{0}{1}".format(self._base_url, endpoint)
+        if (headers is None):
+            headers = {}
+
+        token = self._state.get('access_token', {})
+        if not token:
+            ret_val = self._get_token(action_result)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status(), None
+        headers.update({
+                'Authentication': self._oauth_access_token,
+                'Content-Type': 'application/json'
+            })
+
+        ret_val, resp_json = self._make_rest_call_oauth2(url, action_result, verify=verify, headers=headers, params=params, data=data, json=json, method=method)
+
+        # If token is expired, generate a new token
+        msg = action_result.get_message()
+        # if msg and 'token is invalid' in msg or 'token has expired' in msg or 'ExpiredAuthenticationToken' in msg or 'authentication failed' in msg or 'access denied ' in msg:
+        if msg and "Unauthorized" in msg:
+            self.save_progress("bad token")
+            ret_val = self._get_token(action_result)
+
+            if phantom.is_fail(ret_val):
+                return action_result.get_status(), None
+
+            headers.update({ 'Authentication': self._oauth_access_token})
+
+            ret_val, resp_json = self._make_rest_call_oauth2(url, action_result, verify, headers, params, data, json, method)
+
+        if phantom.is_fail(ret_val):
+            return action_result.get_status(), None
+
+        return phantom.APP_SUCCESS, resp_json
+
+    def _get_token(self, action_result, from_action=False):
+        """ This function is used to get a token via REST Call.
+
+        :param action_result: Object of action result
+        :param from_action: Boolean object of from_action
+        :return: status(phantom.APP_SUCCESS/phantom.APP_ERROR)
+        """
+
+        encoded_creds = base64.b64encode("{}:{}".format(self._username, self._password))
+        token1 = "Basic {}".format(encoded_creds)
+
+        headers = {
+            'Authorization': token1
+        }
+
+        ret_val, resp_json = self._make_rest_call_oauth2("{}{}".format(self._base_url, TOKEN_URL), action_result, verify=self._verify, headers=headers, method='post')
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        self._state['access_token'] = self._res_headers.get('X-Auth-Token')
+        self._oauth_access_token = self._res_headers.get('X-Auth-Token')
+        self.save_state(self._state)
+
+        return phantom.APP_SUCCESS
 
     def _handle_test_connectivity(self, param):
 
@@ -153,18 +239,19 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         self.save_progress("Connecting to endpoint")
 
+        # new token
+        ret_val = self._get_token(action_result)
+
+        if phantom.is_fail(ret_val):
+            return action_result.get_status()
         # make rest call
-        ret_val, response = self._make_rest_call('/api/actions/get_login_info', action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, verify=self._verify, params=None, headers=None)
 
         if (phantom.is_fail(ret_val)):
             # the call to the 3rd party device or service failed, action result should contain all the error details
             # for now the return is commented out, but after implementation, return from here
             self.save_progress("Test Connectivity Failed")
             return action_result.get_status()
-
-        # Return success
-        # self.save_progress("Test Connectivity Passed")
-        # return action_result.set_status(phantom.APP_SUCCESS)
 
         # For now return Error with a message, in case of success we don't set the message, but use the summary
         self.save_progress("Test Connectivity Passed")
@@ -212,6 +299,313 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # For now return Error with a message, in case of success we don't set the message, but use the summary
         return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
 
+    def fetch_filter_criteria(self, filter_id, action_result):
+        endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status(), None
+
+        if response.get('criteria'):
+            return action_result.set_status(phantom.APP_SUCCESS), response.get('criteria')
+
+    def _handle_update_mac(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        filter_id = param['filter_id']
+        type = param['type']
+        overwrite = param['overwrite']
+        # ip_address = param['ip_address']
+
+        criteria = dict()
+        ip_add_dict = dict()
+        params = dict()
+
+        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        ipv4_list = ['ipv4_src', 'ipv4_dst', 'ipv4_src_or_dst', 'ipv4_flow']
+
+        ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        if overwrite:
+            for item in ipv4_list:
+                try:
+                    del criteria_resp[item]
+                except:
+                    pass
+
+        type_map = IP_TYPE_MAP[type][0]
+
+        if type_map != "ipv4_flow":
+
+            ip_list = list()
+            ip_address_1 = param.get(IP_TYPE_MAP[type][1])
+
+            if not ip_address_1:
+                return action_result.set_status(phantom.APP_ERROR, "Please provide value in {} parameter".format(IP_TYPE_MAP[type][1]))
+
+            try:
+                ip_address_1 = json.loads(ip_address_1)
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+            for item in ip_address_1:
+                data = {}
+                data["addr"] = item
+                ip_list.append(data)
+
+            if criteria_resp.get(type_map):
+                temp = criteria_resp.get(type_map)
+                if isinstance(temp, dict):
+                    ip_list.append(temp)
+                else:
+                    ip_list.extend(temp)
+
+            ip_add_dict[type_map] = ip_list
+
+            criteria_resp.update(ip_add_dict)
+
+        elif not param.get('source_ip') and not param.get('destination_ip'):
+            return action_result.set_status("Please provide value in source_id and destination_id parameters")
+
+        else:
+            flow_type = IP_TYPE_MAP[type][1]
+            flow = dict()
+            address_set = list()
+            flow_list = list()
+            try:
+                ip_address_1 = json.loads(param.get('source_ip'))
+                ip_address_2 = json.loads(param.get('destination_ip'))
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+            if len(ip_address_1) != len(ip_address_2):
+                return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
+
+            for i, j in enumerate(ip_address_1):
+                data = {}
+                data['addr_a'] = ip_address_1[i]
+                data['addr_b'] = ip_address_2[i]
+                address_set.append(data)
+
+            flow['address_sets'] = address_set
+            flow['flow_type'] = flow_type
+
+            if criteria_resp.get(type_map):
+                flow_list = criteria_resp.get(type_map)
+
+            flow_list.append(flow)
+
+            criteria_resp.update({"ipv4_flow": flow_list})
+
+        criteria['criteria'] = criteria_resp
+        endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
+
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        # Add the response into the data section
+        action_result.add_data(response)
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Filter's IP updated successfully")
+
+    def _handle_update_ip(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        filter_id = param['filter_id']
+        type = param['type']
+        overwrite = param['overwrite']
+
+        criteria = dict()
+        ip_add_dict = dict()
+        params = dict()
+
+        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        ipv4_list = ['ipv4_src', 'ipv4_dst', 'ipv4_src_or_dst', 'ipv4_flow']
+
+        ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        if overwrite:
+            for item in ipv4_list:
+                try:
+                    del criteria_resp[item]
+                except:
+                    pass
+
+        type_map = IP_TYPE_MAP[type][0]
+
+        if type_map != "ipv4_flow":
+
+            ip_list = list()
+            ip_address_1 = param.get(IP_TYPE_MAP[type][1])
+
+            if not ip_address_1:
+                return action_result.set_status(phantom.APP_ERROR, "Please provide value in {} parameter".format(IP_TYPE_MAP[type][1]))
+
+            try:
+                ip_address_1 = json.loads(ip_address_1)
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+            for item in ip_address_1:
+                data = {}
+                data["addr"] = item
+                ip_list.append(data)
+
+            if criteria_resp.get(type_map):
+                temp = criteria_resp.get(type_map)
+                if isinstance(temp, dict):
+                    ip_list.append(temp)
+                else:
+                    ip_list.extend(temp)
+
+            ip_add_dict[type_map] = ip_list
+
+            criteria_resp.update(ip_add_dict)
+
+        elif not param.get('source_ip') and not param.get('destination_ip'):
+            return action_result.set_status("Please provide value in source_id and destination_id parameters")
+
+        else:
+            flow_type = IP_TYPE_MAP[type][1]
+            flow = dict()
+            address_set = list()
+            flow_list = list()
+            try:
+                ip_address_1 = json.loads(param.get('source_ip'))
+                ip_address_2 = json.loads(param.get('destination_ip'))
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+            if len(ip_address_1) != len(ip_address_2):
+                return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
+
+            for i, j in enumerate(ip_address_1):
+                data = {}
+                data['addr_a'] = ip_address_1[i]
+                data['addr_b'] = ip_address_2[i]
+                address_set.append(data)
+
+            flow['address_sets'] = address_set
+            flow['flow_type'] = flow_type
+
+            if criteria_resp.get(type_map):
+                flow_list = criteria_resp.get(type_map)
+
+            flow_list.append(flow)
+
+            criteria_resp.update({"ipv4_flow": flow_list})
+
+        criteria['criteria'] = criteria_resp
+        endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
+
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        # Add the response into the data section
+        action_result.add_data(response)
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Filter's IP updated successfully")
+
+    def _handle_update_operator(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        filter_id = param['filter_id']
+        operator = param['operator']
+
+        criteria = dict()
+        params = dict()
+
+        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+
+        ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        criteria_resp.update({'logical_operation': operator})
+
+        criteria['criteria'] = criteria_resp
+        endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
+
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        # Add the response into the data section
+        action_result.add_data(response)
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Filter operator updated successfully")
+
+    def _handle_update_mode(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        filter_id = param['filter_id_or_name']
+        mode = param['mode']
+
+        params = dict()
+        data = dict()
+
+        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        data['mode'] = MODE_MAP.get(mode, '')
+
+        endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
+
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="put")
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        # Add the response into the data section
+        action_result.add_data(response)
+
+        # Add a dictionary that is made up of the most important values from data into the summary
+        summary = action_result.update_summary({})
+        summary['num_data'] = "Filter mode updated successfully"
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Filter mode updated successfully")
+
+    def _handle_update_vlan_replacement(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        filter_id = param['filter_id']
+        vlan_id = param['vlan_id']
+        enables = param['enable']
+
+        params = dict()
+        data = dict()
+        vlan_setting = dict()
+
+        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+
+        vlan_setting['enabled'] = enables
+        vlan_setting['vlan_id'] = vlan_id
+
+        data['vlan_replace_setting'] = vlan_setting
+
+        endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
+
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="put")
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        # Add the response into the data section
+        action_result.add_data(response)
+
+        # Add a dictionary that is made up of the most important values from data into the summary
+        summary = action_result.update_summary({})
+        summary['num_data'] = "VLAN replacement settings updated successfully"
+
+        return action_result.set_status(phantom.APP_SUCCESS, "VLAN replacement settings updated successfully")
+
     def _handle_delete_filter(self, param):
 
         # Implement the handler here
@@ -224,38 +618,33 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Access action parameters passed in the 'param' dictionary
 
         # Required values can be accessed directly
-        id = param['id']
+        filter_id = param['filter_id_or_name']
 
-        self.save_progress("id: {}".format(id))
+        self.save_progress("id: {}".format(filter_id))
 
-        # Optional values should use the .get() function
-        allowtemporarydataloss = param.get('allowtemporarydataloss', '')
+        params = {}
+        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
 
-        self.save_progress("allowtemporarydataloss: {}".format(allowtemporarydataloss))
+        endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
         # make rest call
-        ret_val, response = self._make_rest_call('/api/filters/filters_identifier?allowTemporaryDataLoss=true', action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, method="delete")
 
         if (phantom.is_fail(ret_val)):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # for now the return is commented out, but after implementation, return from here
-            # return action_result.get_status()
-            pass
-
-        # Now post process the data,  uncomment code as you deem fit
+            return action_result.get_status()
 
         # Add the response into the data section
         action_result.add_data(response)
 
         # Add a dictionary that is made up of the most important values from data into the summary
-        # summary = action_result.update_summary({})
-        # summary['num_data'] = len(action_result['data'])
+        summary = action_result.update_summary({})
+        summary['num_data'] = "One item deleted succussfully"
 
         # Return success, no need to set the message, only the status
         # BaseConnector will create a textual message based off of the summary dictionary
         # return action_result.set_status(phantom.APP_SUCCESS)
 
         # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
+        return action_result.set_status(phantom.APP_SUCCESS, "Deleted successfully")
 
     def _handle_create_filter(self, param):
 
@@ -302,6 +691,27 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # For now return Error with a message, in case of success we don't set the message, but use the summary
         return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
 
+    def _handle_describe_filter(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        # Add an action result object to self (BaseConnector) to represent the action for this param
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        filter_id_or_name = param.get('filter_id_or_name')
+        params = dict()
+        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+
+        endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id_or_name)
+
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        action_result.add_data(response)
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully retrieved filter's information")
+
     def _handle_list_filters(self, param):
 
         # Implement the handler here
@@ -311,38 +721,23 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        # Access action parameters passed in the 'param' dictionary
+        params = dict()
+        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
 
-        # Required values can be accessed directly
-        # required_parameter = param['required_parameter']
+        endpoint = IXIA_GET_FILTERS_ENDPOINT
 
-        # Optional values should use the .get() function
-        # optional_parameter = param.get('optional_parameter', 'default_value')
-
-        # make rest call
-        ret_val, response = self._make_rest_call('/api/filters', action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params)
 
         if (phantom.is_fail(ret_val)):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # for now the return is commented out, but after implementation, return from here
-            # return action_result.get_status()
-            pass
+            return action_result.get_status()
 
-        # Now post process the data,  uncomment code as you deem fit
+        for item in response:
+            action_result.add_data(item)
 
-        # Add the response into the data section
-        action_result.add_data(response)
+        summary = action_result.update_summary({})
+        summary['num_data'] = len(response)
 
-        # Add a dictionary that is made up of the most important values from data into the summary
-        # summary = action_result.update_summary({})
-        # summary['num_data'] = len(action_result['data'])
-
-        # Return success, no need to set the message, only the status
-        # BaseConnector will create a textual message based off of the summary dictionary
-        # return action_result.set_status(phantom.APP_SUCCESS)
-
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
+        return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_restart(self, param):
 
@@ -404,11 +799,26 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         elif action_id == 'delete_filter':
             ret_val = self._handle_delete_filter(param)
 
+        elif action_id == 'update_vlan_replacement':
+            ret_val = self._handle_update_vlan_replacement(param)
+
+        elif action_id == 'update_mode':
+            ret_val = self._handle_update_mode(param)
+
+        elif action_id == 'update_operator':
+            ret_val = self._handle_update_operator(param)
+
+        elif action_id == 'update_ip':
+            ret_val = self._handle_update_ip(param)
+
         elif action_id == 'create_filter':
             ret_val = self._handle_create_filter(param)
 
         elif action_id == 'list_filters':
             ret_val = self._handle_list_filters(param)
+
+        elif action_id == 'describe_filter':
+            ret_val = self._handle_describe_filter(param)
 
         elif action_id == 'restart':
             ret_val = self._handle_restart(param)
@@ -438,6 +848,15 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         self._verify = config['verify_cert']
 
         self._base_url = config['endpoint']
+
+        self._oauth_access_token = self._state.get('access_token', {})
+
+        self._proxy = {}
+        env_vars = config.get('_reserved_environment_variables', {})
+        if 'HTTP_PROXY' in env_vars:
+            self._proxy['http'] = env_vars['HTTP_PROXY']['value']
+        if 'HTTPS_PROXY' in env_vars:
+            self._proxy['https'] = env_vars['HTTPS_PROXY']['value']
 
         return phantom.APP_SUCCESS
 
