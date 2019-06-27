@@ -312,88 +312,192 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
     def _handle_update_mac(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        filter_id = param['filter_id']
+        filter_id = param['filter_id_or_name']
         type = param['type']
         overwrite = param['overwrite']
         # ip_address = param['ip_address']
 
         criteria = dict()
-        ip_add_dict = dict()
+        mac_add_dict = dict()
         params = dict()
 
         params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
-        ipv4_list = ['ipv4_src', 'ipv4_dst', 'ipv4_src_or_dst', 'ipv4_flow']
+        mac_list = ['mac_src', 'mac_dst', 'mac_src_or_dst', 'mac_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
 
         if overwrite:
-            for item in ipv4_list:
+            for item in mac_list:
                 try:
                     del criteria_resp[item]
                 except:
                     pass
 
-        type_map = IP_TYPE_MAP[type][0]
+        type_map = MAC_TYPE_MAP[type][0]
 
-        if type_map != "ipv4_flow":
+        if type_map == "mac_src":
 
-            ip_list = list()
-            ip_address_1 = param.get(IP_TYPE_MAP[type][1])
+            mac_list = list()
+            mac_address_1 = param.get('source_mac')
+            admin_type = param.get('administration')
 
-            if not ip_address_1:
-                return action_result.set_status(phantom.APP_ERROR, "Please provide value in {} parameter".format(IP_TYPE_MAP[type][1]))
+            if mac_address_1:
+                try:
+                    mac_address_1 = json.loads(mac_address_1)
+                except Exception as e:
+                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
-            try:
-                ip_address_1 = json.loads(ip_address_1)
-            except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                if not isinstance(mac_address_1, list):
+                    return action_result.set_status(phantom.APP_ERROR, "Please provide source_mac input in a valid JSON format")
 
-            for item in ip_address_1:
-                data = {}
-                data["addr"] = item
-                ip_list.append(data)
+                for item in mac_address_1:
+                    data = {}
+                    data["addr"] = item
+                    mac_list.append(data)
+            elif admin_type:
+                try:
+                    admin_type = json.loads(admin_type)
+                except Exception as e:
+                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+                if not isinstance(admin_type, list):
+                    return action_result.set_status(phantom.APP_ERROR, "Please provide administration input in a valid JSON format")
+
+                for item in admin_type:
+                    data = {}
+                    data["admin_type"] = item
+                    mac_list.append(data)
+            else:
+                return action_result.set_status(phantom.APP_ERROR, "Please provide value in source_mac or administration parameter")
 
             if criteria_resp.get(type_map):
                 temp = criteria_resp.get(type_map)
                 if isinstance(temp, dict):
-                    ip_list.append(temp)
+                    mac_list.append(temp)
                 else:
-                    ip_list.extend(temp)
+                    mac_list.extend(temp)
 
-            ip_add_dict[type_map] = ip_list
+            mac_add_dict[type_map] = mac_list
 
-            criteria_resp.update(ip_add_dict)
+            criteria_resp.update(mac_add_dict)
 
-        elif not param.get('source_ip') and not param.get('destination_ip'):
-            return action_result.set_status("Please provide value in source_id and destination_id parameters")
+        elif type_map == "mac_dst":
+            mac_list = list()
+            mac_address_1 = param.get('destination_mac')
+            admin_type = param.get('administration')
+            destination_addr = param.get('destination_address')
+
+            if mac_address_1:
+                try:
+                    mac_address_1 = json.loads(mac_address_1)
+                except Exception as e:
+                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+                if not isinstance(mac_address_1, list):
+                    return action_result.set_status(phantom.APP_ERROR, "Please provide destination_mac input in a valid JSON format")
+
+                for item in mac_address_1:
+                    data = {}
+                    data["addr"] = item
+                    mac_list.append(data)
+            elif admin_type and destination_addr:
+                try:
+                    admin_type = json.loads(admin_type)
+                    destination_addr = json.loads(destination_addr)
+                except Exception as e:
+                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+                if not isinstance(admin_type, list) or not isinstance(destination_addr, list):
+                    return action_result.set_status(phantom.APP_ERROR, "Please provide administration and destination_address input in a valid JSON format")
+
+                if len(admin_type) != len(destination_addr):
+                    return action_result.set_status(phantom.APP_ERROR, "Length of admin_type and destination_addr must be same")
+
+                for i, j in enumerate(admin_type):
+                    data = {}
+                    data['admin_type'] = admin_type[i]
+                    data['dest_addr_type'] = destination_addr[i]
+                    mac_list.append(data)
+            else:
+                return action_result.set_status(phantom.APP_ERROR, "Please provide value in destination_mac or in adminstration and destination_addr parameter(s)")
+
+            if criteria_resp.get(type_map):
+                temp = criteria_resp.get(type_map)
+                if isinstance(temp, dict):
+                    mac_list.append(temp)
+                else:
+                    mac_list.extend(temp)
+
+            mac_add_dict[type_map] = mac_list
+
+            criteria_resp.update(mac_add_dict)
+
+        elif type_map == "mac_src_or_dst":
+            mac_list = list()
+            mac_address_1 = param.get('source_or_destination_mac')
+
+            if mac_address_1:
+                try:
+                    mac_address_1 = json.loads(mac_address_1)
+                except Exception as e:
+                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+                if not isinstance(mac_address_1, list):
+                    return action_result.set_status(phantom.APP_ERROR, "Please provide source_or_destination_mac input in a valid JSON format")
+
+                for item in mac_address_1:
+                    data = {}
+                    data["addr"] = item
+                    mac_list.append(data)
+
+            else:
+                return action_result.set_status(phantom.APP_ERROR, "Please provide value in source_or_destination_mac parameter")
+
+            if criteria_resp.get(type_map):
+                temp = criteria_resp.get(type_map)
+                if isinstance(temp, dict):
+                    mac_list.append(temp)
+                else:
+                    mac_list.extend(temp)
+
+            mac_add_dict[type_map] = mac_list
+
+            criteria_resp.update(mac_add_dict)
 
         else:
-            flow_type = IP_TYPE_MAP[type][1]
+            flow_type = MAC_TYPE_MAP[type][1]
             flow = dict()
             address_set = list()
             flow_list = list()
             try:
-                ip_address_1 = json.loads(param.get('source_ip'))
-                ip_address_2 = json.loads(param.get('destination_ip'))
+                mac_address_1 = json.loads(param.get('source_mac'))
+                mac_address_2 = json.loads(param.get('destination_mac'))
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
-            if len(ip_address_1) != len(ip_address_2):
+            if not isinstance(mac_address_1, list) or not isinstance(mac_address_2):
+                    return action_result.set_status(phantom.APP_ERROR, "Please provide source_mac and destination_mac input in a valid JSON format")
+
+            if len(mac_address_1) != len(mac_address_2):
                 return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
 
-            for i, j in enumerate(ip_address_1):
+            for i, j in enumerate(mac_address_1):
                 data = {}
-                data['addr_a'] = ip_address_1[i]
-                data['addr_b'] = ip_address_2[i]
+                data['addr_a'] = mac_address_1[i]
+                data['addr_b'] = mac_address_2[i]
                 address_set.append(data)
 
             flow['address_sets'] = address_set
             flow['flow_type'] = flow_type
 
             if criteria_resp.get(type_map):
-                flow_list = criteria_resp.get(type_map)
+                temp = criteria_resp.get(type_map)
+                if isinstance(temp, dict):
+                    flow_list.append(temp)
+                else:
+                    flow_list.extend(temp)
 
             flow_list.append(flow)
 
@@ -410,12 +514,124 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Filter's IP updated successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Filter's MAC updated successfully")
+
+    def _handle_update_port(self, param):
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        filter_id = param['filter_id_or_name']
+        type = param['type']
+        overwrite = param['overwrite']
+
+        criteria = dict()
+        port_dict = dict()
+        params = dict()
+
+        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        port_list = ['layer4_dst_port', 'layer4_src_port', 'layer4_src_or_dst_port', 'layer4_port_flow']
+
+        ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        if overwrite:
+            for item in port_list:
+                try:
+                    del criteria_resp[item]
+                except:
+                    pass
+
+        type_map = MAC_TYPE_MAP[type][0]
+
+        if type_map != "ipv4_flow":
+
+            port_list = list()
+            port_1 = param.get(MAC_TYPE_MAP[type][1])
+
+            if not port_1:
+                return action_result.set_status(phantom.APP_ERROR, "Please provide value in {} parameter".format(MAC_TYPE_MAP[type][1]))
+
+            try:
+                port_1 = json.loads(port_1)
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+            if not isinstance(port_1, list):
+                return action_result.set_status(phantom.APP_ERROR, "Please provide {} input in a valid format".format(MAC_TYPE_MAP[type][1]))
+
+            for item in port_1:
+                data = {}
+                data["port"] = ','.join(item)
+                port_list.append(data)
+
+            if criteria_resp.get(type_map):
+                temp = criteria_resp.get(type_map)
+                if isinstance(temp, dict):
+                    port_list.append(temp)
+                else:
+                    port_list.extend(temp)
+
+            port_dict[type_map] = port_list
+
+            criteria_resp.update(port_dict)
+
+        elif not param.get('source_ip') and not param.get('destination_ip'):
+            return action_result.set_status("Please provide value in source_id and destination_id parameters")
+
+        else:
+            flow_type = MAC_TYPE_MAP[type][1]
+            flow = dict()
+            port_set = list()
+            flow_list = list()
+            try:
+                port_1 = json.loads(param.get('source_port'))
+                port_2 = json.loads(param.get('destination_port'))
+            except Exception as e:
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+            if not isinstance(port_1, list) or not isinstance(port_2, list):
+                return action_result.set_status(phantom.APP_ERROR, "Please provide source_port and destination_port input in a valid format")
+
+            if len(port_1) != len(port_2):
+                return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
+
+            for i, j in enumerate(port_1):
+                data = {}
+                data['port_a'] = ','.join(port_1[i])
+                data['port_b'] = ','.join(port_2[i])
+                port_set.append(data)
+
+            flow['port_sets'] = port_set
+            flow['flow_type'] = flow_type
+
+            if criteria_resp.get(type_map):
+                temp = criteria_resp.get(type_map)
+                if isinstance(temp, dict):
+                    flow_list.append(temp)
+                else:
+                    flow_list.extend(temp)
+
+            flow_list.append(flow)
+
+            criteria_resp.update({"ipv4_flow": flow_list})
+
+        criteria['criteria'] = criteria_resp
+        endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
+
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        # Add the response into the data section
+        action_result.add_data(response)
+
+        return action_result.set_status(phantom.APP_SUCCESS, "Filter's port updated successfully")
 
     def _handle_update_ip(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        filter_id = param['filter_id']
+        filter_id = param['filter_id_or_name']
         type = param['type']
         overwrite = param['overwrite']
 
@@ -452,6 +668,9 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
+            if not isinstance(ip_address_1, list):
+                return action_result.set_status(phantom.APP_ERROR, "Please provide {} input in a valid format".format(IP_TYPE_MAP[type][1]))
+
             for item in ip_address_1:
                 data = {}
                 data["addr"] = item
@@ -482,6 +701,9 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
+            if not isinstance(ip_address_1, list) or not isinstance(ip_address_2, list):
+                return action_result.set_status(phantom.APP_ERROR, "Please provide source_ip and destination_ip input in a valid format")
+
             if len(ip_address_1) != len(ip_address_2):
                 return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
 
@@ -495,7 +717,11 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             flow['flow_type'] = flow_type
 
             if criteria_resp.get(type_map):
-                flow_list = criteria_resp.get(type_map)
+                temp = criteria_resp.get(type_map)
+                if isinstance(temp, dict):
+                    flow_list.append(temp)
+                else:
+                    flow_list.extend(temp)
 
             flow_list.append(flow)
 
@@ -517,7 +743,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
     def _handle_update_operator(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        filter_id = param['filter_id']
+        filter_id = param['filter_id_or_name']
         operator = param['operator']
 
         criteria = dict()
@@ -655,41 +881,29 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        # Access action parameters passed in the 'param' dictionary
-
-        # Required values can be accessed directly
-        payload = param['payload']
-
         # Optional values should use the .get() function
-        allowtemporarydataloss = param.get('allowtemporarydataloss', '')
+        allowtemporarydataloss = param.get('allowtemporarydataloss')
+        filter_name = param.get('filter_name')
 
-        self.save_progress("allowtemporarydataloss: {}".format(allowtemporarydataloss))
-        self.save_progress("payload: {}".format(payload))
+        data = None
+        if filter_name:
+            data = dict()
+            data['name'] = filter_name
+
+        params = {}
+        params['allowtemporarydataloss'] = allowtemporarydataloss 
+
+        endpoint = IXIA_GET_FILTERS_ENDPOINT
 
         # make rest call
-        ret_val, response = self._make_rest_call('/api/filters?allowTemporaryDataLoss=true', action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="post")
 
         if (phantom.is_fail(ret_val)):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # for now the return is commented out, but after implementation, return from here
-            # return action_result.get_status()
-            pass
+            return action_result.get_status()
 
-        # Now post process the data,  uncomment code as you deem fit
-
-        # Add the response into the data section
         action_result.add_data(response)
 
-        # Add a dictionary that is made up of the most important values from data into the summary
-        # summary = action_result.update_summary({})
-        # summary['num_data'] = len(action_result['data'])
-
-        # Return success, no need to set the message, only the status
-        # BaseConnector will create a textual message based off of the summary dictionary
-        # return action_result.set_status(phantom.APP_SUCCESS)
-
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
+        return action_result.set_status(phantom.APP_SUCCESS, "Created a filter")
 
     def _handle_describe_filter(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -810,6 +1024,12 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         elif action_id == 'update_ip':
             ret_val = self._handle_update_ip(param)
+
+        elif action_id == 'update_port':
+            ret_val = self._handle_update_port(param)
+
+        elif action_id == 'update_mac':
+            ret_val = self._handle_update_mac(param)
 
         elif action_id == 'create_filter':
             ret_val = self._handle_create_filter(param)

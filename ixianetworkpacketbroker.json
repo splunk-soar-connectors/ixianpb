@@ -382,7 +382,7 @@
             "type": "generic",
             "read_only": false,
             "parameters": {
-                "filter_id": {
+                "filter_id_or_name": {
                     "description": "Filter Identifier",
                     "data_type": "string",
                     "required": true,
@@ -404,46 +404,174 @@
                     ],
                     "order": 1
                 },
-                "Administration": {
+                "administration": {
                     "description": "Admin type",
                     "data_type": "string",
-                    "required": true,
+                    "required": false,
                     "primary": false,
-                    "value_list": [
-                        "Don't Care",
-                        "Local",
-                        "Universal(Globally Unique)"
-                    ],
-                    "order": 1
+                    "order": 2
                 },
-                "Destination Address": {
+                "destination_address": {
                     "description": "Type",
                     "data_type": "string",
-                    "required": true,
+                    "required": false,
                     "primary": false,
-                    "value_list": [
-                        "Don't Care",
-                        "Individual(Unicast)",
-                        "Group(Multicast/Broadcast)"
-                    ],
-                    "order": 1
+                    "order": 3
                 },
                 "source_mac": {
                     "description": "Source MAC addresses to be added",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
-                    "order": 2
+                    "order": 4
                 },
                 "destination_mac": {
                     "description": "Destination MAC addresses to be added",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
-                    "order": 3
+                    "order": 5
                 },
                 "source_or_destination_mac": {
                     "description": "Destination MAC addresses to be added",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "order": 6
+                },
+                "overwrite": {
+                    "description": "",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "default": false,
+                    "order": 7
+                },
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss?",
+                    "data_type": "boolean",
+                    "required": false,
+                    "primary": false,
+                    "order": 8
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Filter's IP updated successfully"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.allowtemporarydataloss",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.administration",
+                    "data_type": "string",
+                    "example_values": [
+                        "[\"LOCAL\", \"UNIVERSAL\"]"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.filter_id_or_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "122"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.type",
+                    "data_type": "string",
+                    "example_values": [
+                        "Source"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.overwrite",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
+        },
+        {
+            "action": "update port",
+            "identifier": "update_port",
+            "description": "Update port of a filter",
+            "type": "generic",
+            "read_only": false,
+            "parameters": {
+                "filter_id_or_name": {
+                    "description": "Filter Identifier",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "contains": [],
+                    "order": 0
+                },
+                "type": {
+                    "description": "Type",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": false,
+                    "value_list": [
+                        "Source",
+                        "Destination",
+                        "Source or Destination",
+                        "Unidirectional Flow",
+                        "Bidirectional Flow"
+                    ],
+                    "order": 1
+                },
+                "source_port": {
+                    "description": "Source IP addresses to be added",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "order": 2
+                },
+                "destination_port": {
+                    "description": "Destination IP addresses to be added",
+                    "data_type": "string",
+                    "required": false,
+                    "primary": false,
+                    "order": 3
+                },
+                "source_or_destination_port": {
+                    "description": "Destination IP addresses to be added",
                     "data_type": "string",
                     "required": false,
                     "primary": false,
@@ -467,36 +595,69 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.parameter.filter_id",
+                    "data_path": "action_result.status",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "id",
-                    "column_order": 0
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Filter's port updated successfully"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.allowtemporarydataloss",
                     "data_type": "boolean",
-                    "contains": [],
-                    "column_name": "allowtemporarydataloss",
-                    "column_order": 1
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
-                    "data_path": "action_result.status",
+                    "data_path": "action_result.parameter.type",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 2
+                    "example_values": [
+                        "Source or Destination"
+                    ]
                 },
                 {
-                    "data_path": "action_result.message",
-                    "data_type": "string"
+                    "data_path": "action_result.parameter.filter_id_or_name",
+                    "data_type": "string",
+                    "example_values": [
+                        "20"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.source_or_destination_port",
+                    "data_type": "string",
+                    "example_values": [
+                        "[[\"8888\"]]"
+                    ]
+                },
+                {
+                    "data_path": "action_result.parameter.overwrite",
+                    "data_type": "boolean",
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 }
             ],
             "render": {
@@ -760,14 +921,11 @@
             "type": "generic",
             "read_only": false,
             "parameters": {
-                "payload": {
-                    "description": "JSON containing field key/value",
+                "filter_name": {
+                    "description": "Name of the filter",
                     "data_type": "string",
-                    "required": true,
+                    "required": false,
                     "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
                     "order": 0
                 },
                 "allowtemporarydataloss": {
@@ -775,43 +933,60 @@
                     "data_type": "boolean",
                     "required": false,
                     "primary": false,
-                    "contains": [],
-                    "default": true,
+                    "default": false,
                     "order": 1
                 }
             },
             "output": [
                 {
-                    "data_path": "action_result.parameter.payload",
+                    "data_path": "action_result.status",
                     "data_type": "string",
-                    "contains": [],
-                    "column_name": "payload",
-                    "column_order": 0
+                    "example_values": [
+                        "success"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.id",
+                    "data_type": "numeric",
+                    "example_values": [
+                        124
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string",
+                    "example_values": [
+                        "Created a filter"
+                    ]
                 },
                 {
                     "data_path": "action_result.parameter.allowtemporarydataloss",
                     "data_type": "boolean",
-                    "contains": [],
-                    "column_name": "allowtemporarydataloss",
-                    "column_order": 1
+                    "example_values": [
+                        true,
+                        false
+                    ]
                 },
                 {
-                    "data_path": "action_result.status",
+                    "data_path": "action_result.parameter.filter_name",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 2
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string"
+                    "example_values": [
+                        "test_filter_action"
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 },
                 {
                     "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
+                    "data_type": "numeric",
+                    "example_values": [
+                        1
+                    ]
                 }
             ],
             "render": {

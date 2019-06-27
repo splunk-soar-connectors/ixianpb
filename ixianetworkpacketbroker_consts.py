@@ -20,13 +20,17 @@ IP_TYPE_MAP = {
     "Unidirectional Flow": ["ipv4_flow", "UNI"],
     "Bidirectional Flow": ["ipv4_flow", "BIDI"]
 }
-ADMIN_MAP = {
-    "Don't Care": "ANY",
-    "Local": "LOCAL",
-    "Universal(Globally Unique)": "UNIVERSAL"
+PORT_TYPE_MAP = {
+    "Source": ["ipv4_src", "source_ip"],
+    "Destination": ["ipv4_dst", "destination_ip"],
+    "Source or Destination": ["ipv4_src_or_dst", "source_or_destination_ip"],
+    "Unidirectional Flow": ["ipv4_flow", "UNI"],
+    "Bidirectional Flow": ["ipv4_flow", "BIDI"]
 }
-DESTINATION_ADDRESS_MAP = {
-    "Don't Care": "ANY",
-    "Individual(Unicast)": "INDIVIDUAL",
-    "Group(Multicast/Broadcast)": "GROUP"
+MAC_TYPE_MAP = {
+    "Source": ["layer4_src_port", "source_port"],
+    "Destination": ["layer4_dst_port", "destination_port"],
+    "Source or Destination": ["layer4_src_or_dst_port", "source_or_destination_port"],
+    "Unidirectional Flow": ["layer4_port_flow", "UNI"],
+    "Bidirectional Flow": ["layer4_port_flow", "BIDI"]
 }
