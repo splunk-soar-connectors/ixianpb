@@ -4,6 +4,7 @@
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
 IXIA_GET_FILTERS_ENDPOINT = '/api/filters'
+IXIA_RESTART_ENDPOINT = '/api/actions/restart'
 TOKEN_URL = '/api/actions/get_login_info'
 MODE_MAP = {
     "Pass All": "PASS_ALL",
@@ -20,14 +21,14 @@ IP_TYPE_MAP = {
     "Unidirectional Flow": ["ipv4_flow", "UNI"],
     "Bidirectional Flow": ["ipv4_flow", "BIDI"]
 }
-PORT_TYPE_MAP = {
-    "Source": ["ipv4_src", "source_ip"],
-    "Destination": ["ipv4_dst", "destination_ip"],
-    "Source or Destination": ["ipv4_src_or_dst", "source_or_destination_ip"],
-    "Unidirectional Flow": ["ipv4_flow", "UNI"],
-    "Bidirectional Flow": ["ipv4_flow", "BIDI"]
-}
 MAC_TYPE_MAP = {
+    "Source": ["mac_src", "source_mac"],
+    "Destination": ["mac_dst", "destination_mac"],
+    "Source or Destination": ["mac_src_or_dst", "source_or_destination_mac"],
+    "Unidirectional Flow": ["mac_flow", "UNI"],
+    "Bidirectional Flow": ["mac_flow", "BIDI"]
+}
+PORT_TYPE_MAP = {
     "Source": ["layer4_src_port", "source_port"],
     "Destination": ["layer4_dst_port", "destination_port"],
     "Source or Destination": ["layer4_src_or_dst_port", "source_or_destination_port"],
