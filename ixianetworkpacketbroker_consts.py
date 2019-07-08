@@ -4,6 +4,7 @@
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
 IXIA_GET_FILTERS_ENDPOINT = '/api/filters'
+IXIA_GET_USERS_ENDPOINT = '/api/users'
 IXIA_RESTART_ENDPOINT = '/api/actions/restart'
 TOKEN_URL = '/api/actions/get_login_info'
 MODE_MAP = {

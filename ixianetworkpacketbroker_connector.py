@@ -253,13 +253,32 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, verify=self._verify, params=None, headers=None)
 
         if (phantom.is_fail(ret_val)):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # for now the return is commented out, but after implementation, return from here
             self.save_progress("Test Connectivity Failed")
             return action_result.get_status()
 
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
         self.save_progress("Test Connectivity Passed")
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_list_users(self, param):
+
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+
+        # Add an action result object to self (BaseConnector) to represent the action for this param
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        allowtemporarydataloss = param['allowtemporarydataloss']
+
+        params = {}
+        params['allowtemporarydataloss'] = allowtemporarydataloss
+
+        # make rest call
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_USERS_ENDPOINT, verify=self._verify, params=params, headers=None)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        action_result.add_data(response)
+
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_list_sessions(self, param):
@@ -269,38 +288,23 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        # Access action parameters passed in the 'param' dictionary
+        allowtemporarydataloss = param['allowtemporarydataloss']
+        user_id = param['user_id']
 
-        # Required values can be accessed directly
-        # required_parameter = param['required_parameter']
+        params = {}
+        params['allowtemporarydataloss'] = allowtemporarydataloss
 
-        # Optional values should use the .get() function
-        # optional_parameter = param.get('optional_parameter', 'default_value')
+        endpoint = "{}/{}".format(IXIA_GET_USERS_ENDPOINT, user_id)
 
         # make rest call
-        ret_val, response = self._make_rest_call('/endpoint', action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None)
 
         if (phantom.is_fail(ret_val)):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # for now the return is commented out, but after implementation, return from here
-            # return action_result.get_status()
-            pass
+            return action_result.get_status()
 
-        # Now post process the data,  uncomment code as you deem fit
-
-        # Add the response into the data section
         action_result.add_data(response)
 
-        # Add a dictionary that is made up of the most important values from data into the summary
-        # summary = action_result.update_summary({})
-        # summary['num_data'] = len(action_result['data'])
-
-        # Return success, no need to set the message, only the status
-        # BaseConnector will create a textual message based off of the summary dictionary
-        # return action_result.set_status(phantom.APP_SUCCESS)
-
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
+        return action_result.set_status(phantom.APP_SUCCESS)
 
     def fetch_filter_criteria(self, filter_id, action_result):
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
@@ -315,13 +319,24 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         else:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "No criteria found"), None)
 
+    def check_input(self, inp, inp_name, action_result):
+        if isinstance(inp, list):
+            for i in inp:
+                if not isinstance(i, list):
+                    return action_result.set_status(phantom.APP_ERROR, 'The input parameter {} must be in proper JSON (list of list) format.\
+                    Example :- [["X","Y"], ["Z"]]'.format(inp_name))
+
+            return action_result.set_status(phantom.APP_SUCCESS)
+        else:
+            return action_result.set_status(phantom.APP_ERROR, 'The input parameter {} must be in proper JSON (list of list) format.\
+            Example :- [["X","Y"], ["Z"]]'.format(inp_name))
+
     def _handle_update_mac(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         filter_id = param['filter_id_or_name']
         type = param['type']
         overwrite = param['overwrite']
-        # ip_address = param['ip_address']
 
         criteria = dict()
         mac_add_dict = dict()
@@ -355,8 +370,10 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 except Exception as e:
                     return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
-                if not isinstance(mac_address_1, list):
-                    return action_result.set_status(phantom.APP_ERROR, "Please provide source_mac input in a valid JSON format")
+                ret_val = self.check_input(mac_address_1, 'source_mac', action_result)
+
+                if phantom.is_fail(ret_val):
+                    return action_result.get_status()
 
                 for item in mac_address_1:
                     data = {}
@@ -401,8 +418,10 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 except Exception as e:
                     return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
-                if not isinstance(mac_address_1, list):
-                    return action_result.set_status(phantom.APP_ERROR, "Please provide destination_mac input in a valid JSON format")
+                ret_val = self.check_input(mac_address_1, 'destination_mac', action_result)
+
+                if phantom.is_fail(ret_val):
+                    return action_result.get_status()
 
                 for item in mac_address_1:
                     data = {}
@@ -450,8 +469,10 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 except Exception as e:
                     return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
-                if not isinstance(mac_address_1, list):
-                    return action_result.set_status(phantom.APP_ERROR, "Please provide source_or_destination_mac input in a valid JSON format")
+                ret_val = self.check_input(mac_address_1, 'source_or_destination_mac', action_result)
+
+                if phantom.is_fail(ret_val):
+                    return action_result.get_status()
 
                 for item in mac_address_1:
                     data = {}
@@ -483,8 +504,15 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
-            if not isinstance(mac_address_1, list) or not isinstance(mac_address_2, list):
-                    return action_result.set_status(phantom.APP_ERROR, "Please provide source_mac and destination_mac input in a valid JSON format")
+            ret_val = self.check_input(mac_address_1, 'source_mac', action_result)
+
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+
+            ret_val = self.check_input(mac_address_2, 'destination_mac', action_result)
+
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
 
             if len(mac_address_1) != len(mac_address_2):
                 return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
@@ -561,8 +589,13 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
-            if not isinstance(port_1, list):
-                return action_result.set_status(phantom.APP_ERROR, "Please provide {} input in a valid format".format(PORT_TYPE_MAP[type][1]))
+            ret_val = self.check_input(port_1, PORT_TYPE_MAP[type][1], action_result)
+
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+
+            # if not isinstance(port_1, list):
+                # return action_result.set_status(phantom.APP_ERROR, "Please provide {} input in a valid format".format(PORT_TYPE_MAP[type][1]))
 
             for item in port_1:
                 data = {}
@@ -593,6 +626,16 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 port_2 = json.loads(param.get('destination_port'))
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+
+            ret_val = self.check_input(port_1, 'source_port', action_result)
+
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+
+            ret_val = self.check_input(port_2, 'destination_port', action_result)
+
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
 
             if not isinstance(port_1, list) or not isinstance(port_2, list):
                 return action_result.set_status(phantom.APP_ERROR, "Please provide source_port and destination_port input in a valid format")
@@ -673,8 +716,13 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
-            if not isinstance(ip_address_1, list):
-                return action_result.set_status(phantom.APP_ERROR, "Please provide {} input in a valid format".format(IP_TYPE_MAP[type][1]))
+            ret_val = self.check_input(ip_address_1, IP_TYPE_MAP[type][1], action_result)
+
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+
+            # if not isinstance(ip_address_1, list):
+                # return action_result.set_status(phantom.APP_ERROR, "Please provide {} input in a valid format".format(IP_TYPE_MAP[type][1]))
 
             for item in ip_address_1:
                 data = {}
@@ -706,8 +754,18 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             except Exception as e:
                 return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
 
-            if not isinstance(ip_address_1, list) or not isinstance(ip_address_2, list):
-                return action_result.set_status(phantom.APP_ERROR, "Please provide source_ip and destination_ip input in a valid format")
+            ret_val = self.check_input(ip_address_1, 'source_ip', action_result)
+
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+
+            ret_val = self.check_input(ip_address_2, 'destination_ip', action_result)
+
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+
+            # if not isinstance(ip_address_1, list) or not isinstance(ip_address_2, list):
+                # return action_result.set_status(phantom.APP_ERROR, "Please provide source_ip and destination_ip input in a valid format")
 
             if len(ip_address_1) != len(ip_address_2):
                 return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
@@ -959,14 +1017,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        # Access action parameters passed in the 'param' dictionary
-
-        # Required values can be accessed directly
-        # required_parameter = param['required_parameter']
-
-        # Optional values should use the .get() function
-        # optional_parameter = param.get('optional_parameter', 'default_value')
-
         # make rest call
         endpoint = IXIA_RESTART_ENDPOINT
 
@@ -1019,6 +1069,9 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         elif action_id == 'list_filters':
             ret_val = self._handle_list_filters(param)
 
+        elif action_id == 'list_users':
+            ret_val = self._handle_list_users(param)
+
         elif action_id == 'describe_filter':
             ret_val = self._handle_describe_filter(param)
 
@@ -1036,15 +1089,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # get the asset config
         config = self.get_config()
 
-        """
-        # Access values in asset config by the name
-
-        # Required values can be accessed directly
-        required_config_name = config['required_config_name']
-
-        # Optional values should use the .get() function
-        optional_config_name = config.get('optional_config_name')
-        """
         self._username = config['username']
         self._password = config['password']
         self._verify = config['verify_cert']
