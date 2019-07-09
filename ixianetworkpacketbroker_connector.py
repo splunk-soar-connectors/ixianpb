@@ -259,53 +259,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         self.save_progress("Test Connectivity Passed")
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _handle_list_users(self, param):
-
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
-
-        # Add an action result object to self (BaseConnector) to represent the action for this param
-        action_result = self.add_action_result(ActionResult(dict(param)))
-
-        allowtemporarydataloss = param['allowtemporarydataloss']
-
-        params = {}
-        params['allowtemporarydataloss'] = allowtemporarydataloss
-
-        # make rest call
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_USERS_ENDPOINT, verify=self._verify, params=params, headers=None)
-
-        if (phantom.is_fail(ret_val)):
-            return action_result.get_status()
-
-        action_result.add_data(response)
-
-        return action_result.set_status(phantom.APP_SUCCESS)
-
-    def _handle_list_sessions(self, param):
-
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
-
-        # Add an action result object to self (BaseConnector) to represent the action for this param
-        action_result = self.add_action_result(ActionResult(dict(param)))
-
-        allowtemporarydataloss = param['allowtemporarydataloss']
-        user_id = param['user_id']
-
-        params = {}
-        params['allowtemporarydataloss'] = allowtemporarydataloss
-
-        endpoint = "{}/{}".format(IXIA_GET_USERS_ENDPOINT, user_id)
-
-        # make rest call
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None)
-
-        if (phantom.is_fail(ret_val)):
-            return action_result.get_status()
-
-        action_result.add_data(response)
-
-        return action_result.set_status(phantom.APP_SUCCESS)
-
     def fetch_filter_criteria(self, filter_id, action_result):
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
 
@@ -548,7 +501,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Filter's MAC updated successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Updated the MAC address criteria for a filter successfully")
 
     def _handle_update_port(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -674,7 +627,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Filter's port updated successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Updated the port criteria for a filter successfully")
 
     def _handle_update_ip(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -801,7 +754,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Filter's IP updated successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Updated the IP address criteria for a filter successfully")
 
     def _handle_update_operator(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -893,7 +846,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         summary = action_result.update_summary({})
         summary['num_data'] = "VLAN replacement settings updated successfully"
 
-        return action_result.set_status(phantom.APP_SUCCESS, "VLAN replacement settings updated successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Filter VLAN replacement settings updated successfully")
 
     def _handle_delete_filter(self, param):
 
@@ -929,7 +882,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # return action_result.set_status(phantom.APP_SUCCESS)
 
         # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_SUCCESS, "Deleted successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Deleted filter successfully")
 
     def _handle_create_filter(self, param):
 
@@ -962,7 +915,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Created a filter")
+        return action_result.set_status(phantom.APP_SUCCESS, "Created filter successfully")
 
     def _handle_describe_filter(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -980,6 +933,77 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
+
+        src_port_grp_list = response.get('source_port_group_list')
+        dst_port_grp_list = response.get('dest_port_group_list')
+        src_port_list = response.get('source_port_list')
+        dst_port_list = response.get('dest_port_list')
+        resp_port_grp_dict = dict()
+
+        if src_port_grp_list or dst_port_grp_list:
+
+            ret_val, resp = self._make_rest_call_helper_oauth2(action_result, '/api/port_groups', verify=self._verify, params=params)
+
+            if (phantom.is_fail(ret_val)):
+                return action_result.get_status()
+
+            for item in resp:
+                resp_port_grp_dict[item.get('id')] = item.get('name')
+
+            source_list = list()
+            destination_list = list()
+
+            for i in src_port_grp_list:
+                if i in resp_port_grp_dict:
+                    port_grp_detail = dict()
+                    port_grp_detail['id'] = i
+                    port_grp_detail['name'] = resp_port_grp_dict[i]
+                    source_list.append(port_grp_detail)
+
+            for i in dst_port_grp_list:
+                if i in resp_port_grp_dict:
+                    port_grp_detail = dict()
+                    port_grp_detail['id'] = i
+                    port_grp_detail['name'] = resp_port_grp_dict[i]
+                    destination_list.append(port_grp_detail)
+
+            group_dic = dict()
+            group_dic['source_list'] = source_list
+            group_dic['destination_list'] = destination_list
+
+            response['port_group_list'] = group_dic
+
+        if src_port_list or dst_port_list:
+
+            ret_val, resp = self._make_rest_call_helper_oauth2(action_result, '/api/ports', verify=self._verify, params=params)
+
+            if (phantom.is_fail(ret_val)):
+                return action_result.get_status()
+
+            for item in resp:
+                resp_port_grp_dict[item.get('id')] = item.get('name')
+
+            source_list = list()
+            destination_list = list()
+
+            for i in src_port_list:
+                if i in resp_port_grp_dict:
+                    port_grp_detail = dict()
+                    port_grp_detail[i] = src_port_list[i]
+                    source_list.append(port_grp_detail)
+
+            for i in dst_port_list:
+                if i in resp_port_grp_dict:
+                    port_grp_detail = dict()
+                    port_grp_detail['id'] = i
+                    port_grp_detail['name'] = dst_port_list[i]
+                    destination_list.append(port_grp_detail)
+
+            group_dic = dict()
+            group_dic['source_list'] = source_list
+            group_dic['destination_list'] = destination_list
+
+            response['port_list'] = group_dic
 
         action_result.add_data(response)
 
@@ -1006,7 +1030,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             action_result.add_data(item)
 
         summary = action_result.update_summary({})
-        summary['num_data'] = len(response)
+        summary['num_filters'] = len(response)
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -1039,9 +1063,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
 
-        elif action_id == 'list_sessions':
-            ret_val = self._handle_list_sessions(param)
-
         elif action_id == 'delete_filter':
             ret_val = self._handle_delete_filter(param)
 
@@ -1068,9 +1089,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         elif action_id == 'list_filters':
             ret_val = self._handle_list_filters(param)
-
-        elif action_id == 'list_users':
-            ret_val = self._handle_list_users(param)
 
         elif action_id == 'describe_filter':
             ret_val = self._handle_describe_filter(param)

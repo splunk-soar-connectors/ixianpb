@@ -122,6 +122,11 @@
                         <th>Filter ID</th>
                         <th>Filter Mode</th>
                         <th>VLAN ID</th>
+                        <th>Source Port Group</th>
+                        <th>Destination Port Group</th>
+                        <th>Source Port</th>
+                        <th>Destination Port</th>
+                        <th>
                     </tr>
                 </thead>
                 <tbody>
@@ -137,6 +142,64 @@
                             </td>
                             <td>{{ filter.mode }}</td>
                             <td>{{ filter.vlan_replace_setting.vlan_id }}</td>
+            
+                            {% if filter.port_group_list and filter.port_group_list.source_list %}
+                                <td class="widget-td">
+                                    {% for src_port_grp_list in filter.port_group_list.source_list %}
+                                        <span class="glyphicon glyphicon-dot"></span>&nbsp;
+                                        {{ src_port_grp_list.id }} - {{ src_port_grp_list.name }}
+                                        {% if not forloop.last %}<br/> 
+						                {% endif %}
+                                    {% endfor %}
+                                </td>
+                            {% else %}
+                                <td>
+                                    None
+                                </td>
+                            {%endif%}
+
+                            {% if filter.port_group_list and filter.port_group_list.destination_list %}
+                                <td class="widget-td">
+                                    {% for dst_port_grp_list in filter.port_group_list.destination_list %}
+                                        <span class="glyphicon glyphicon-dot"></span>&nbsp;
+                                        {{ dst_port_grp_list.id }} - {{ dst_port_grp_list.name }}
+                                        {% if not forloop.last %}<br/> 
+						                {% endif %}
+                                    {% endfor %}
+                                </td>
+                            {% else %}
+                                <td>
+                                    None
+                                </td>
+                            {%endif%}
+                            {% if filter.port_list and filter.port_list.source_list %}
+                                <td class="widget-td">
+                                    {% for src_port_list in filter.port_list.source_list %}
+                                        <span class="glyphicon glyphicon-dot"></span>&nbsp;
+                                        {{ src_port_list.id }} - {{ src_port_list.name }}
+                                        {% if not forloop.last %}<br/> 
+						                {% endif %}
+                                    {% endfor %}
+                                </td>
+                            {% else %}
+                                <td>
+                                    None
+                                </td>
+                            {%endif%}
+                            {% if filter.port_list and filter.port_list.destination_list %}
+                                <td class="widget-td">
+                                    {% for dst_port_list in filter.port_list.destination_list %}
+                                        <span class="glyphicon glyphicon-dot"></span>&nbsp;
+                                        {{ dst_port_list.id }} - {{ dst_port_list.name }}
+                                        {% if not forloop.last %}<br/> 
+						                {% endif %}
+                                    {% endfor %}
+                                </td>
+                            {% else %}
+                                <td>
+                                    None
+                                </td>
+                            {%endif%}
                         </tr>
                     {% endfor %}
                 </tbody>

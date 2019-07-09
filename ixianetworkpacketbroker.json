@@ -1,7 +1,7 @@
 {
     "appid": "4a7da742-927a-40a9-bd50-1a61c2ff78df",
     "name": "Ixia Network Packet Broker",
-    "description": "This ixia NPB App supports a variety of actions on network packet broker platform. This App has been tested with Vision One",
+    "description": "This ixia NPB App supports a variety of actions on the network packet broker platform. This App has been tested with Vision One",
     "type": "network device",
     "product_vendor": "Ixia",
     "logo": "logo_ixianetworkpacketbroker.svg",
@@ -52,336 +52,6 @@
             "read_only": true,
             "parameters": {},
             "output": [],
-            "versions": "EQ(*)"
-        },
-        {
-            "action": "list users",
-            "identifier": "list_users",
-            "description": "List the users currently available on the instance",
-            "type": "investigate",
-            "read_only": true,
-            "parameters": {
-                "allowtemporarydataloss": {
-                    "description": "Allow Temporary Data Loss?",
-                    "data_type": "boolean",
-                    "required": false,
-                    "primary": false,
-                    "order": 0
-                }
-            },
-            "output": [
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string",
-                    "example_values": [
-                        "success"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.*.id",
-                    "data_type": "numeric",
-                    "column_name": "User ID",
-                    "column_order": 0,
-                    "contains":[
-                        "ixianpb user id"
-                    ],
-                    "example_values": [
-                        10
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.*.name",
-                    "data_type": "string",
-                    "column_name": "User Name",
-                    "column_order": 1,
-                    "example_values": [
-                        "admin"
-                    ]
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.allowtemporarydataloss",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "summary.total_objects",
-                    "data_type": "numeric",
-                    "example_values": [
-                        1
-                    ]
-                },
-                {
-                    "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric",
-                    "example_values": [
-                        1
-                    ]
-                }
-            ],
-            "render": {
-                "type": "table"
-            },
-            "versions": "EQ(*)"
-        },
-        {
-            "action": "list sessions",
-            "identifier": "list_sessions",
-            "description": "List the sessions currently available on the Monitoring node",
-            "type": "investigate",
-            "read_only": true,
-            "parameters": {
-                "user_id": {
-                    "description": "User Identifier",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": true,
-                    "contains":[
-                        "ixianpb user id"
-                    ],
-                    "order": 0
-                },
-                "allowtemporarydataloss": {
-                    "description": "Allow Temporary Data Loss?",
-                    "data_type": "boolean",
-                    "required": false,
-                    "primary": false,
-                    "order": 1
-                }
-            },
-            "output": [
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string",
-                    "example_values": [
-                        "success",
-                        "failed"
-                    ]
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
-                },
-                {
-                    "data_path": "summary.total_objects",
-                    "data_type": "numeric",
-                    "example_values": [
-                        1
-                    ]
-                },
-                {
-                    "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric",
-                    "example_values": [
-                        1
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.login_id",
-                    "data_type": "string",
-                    "example_values": [
-                        "admin"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.full_name",
-                    "data_type": "string",
-                    "example_values": [
-                        "System Administrator"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.created",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.is_locked",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.session_type",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.email",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.is_sysadm",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.phone",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "action_result.data.*.session_count_map.web_api",
-                    "data_type": "numeric",
-                    "column_name": "Web API Sessions",
-                    "column_order": 0,
-                    "example_values": [
-                        1
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.session_count_map.web_gui",
-                    "data_type": "numeric",
-                    "column_name": "Web GUI Sessions",
-                    "column_order": 1,
-                    "example_values": [
-                        0
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.mod_count",
-                    "data_type": "numeric",
-                    "example_values": [
-                        209
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.is_logged_in",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.last_login_info.timestamp",
-                    "data_type": "numeric",
-                    "example_values": [
-                        1562587786002
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.last_login_info.failures_count",
-                    "data_type": "numeric",
-                    "example_values": [
-                        0
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.last_login_info.is_sysadm_modified",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.last_login_info.client_ip_address",
-                    "data_type": "string",
-                    "example_values": [
-                        "10.1.19.122"
-                    ],
-                    "contains": [
-                        "ip"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.prev_login_info.timestamp",
-                    "data_type": "numeric",
-                    "example_values": [
-                        1562587081722
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.prev_login_info.failures_count",
-                    "data_type": "numeric",
-                    "example_values": [
-                        0
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.prev_login_info.is_sysadm_modified",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.prev_login_info.client_ip_address",
-                    "data_type": "string",
-                    "example_values": [
-                        "10.32.34.193"
-                    ],
-                    "contains": [
-                        "ip"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.id",
-                    "data_type": "numeric",
-                    "example_values": [
-                        10
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.authentication_mode",
-                    "data_type": "string",
-                    "example_values": [
-                        "LOCAL"
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.password_almost_expired",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.data.*.password_last_changed",
-                    "data_type": "numeric",
-                    "example_values": [
-                        0
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.allowtemporarydataloss",
-                    "data_type": "boolean",
-                    "example_values": [
-                        true,
-                        false
-                    ]
-                },
-                {
-                    "data_path": "action_result.parameter.user_id",
-                    "data_type": "string",
-                    "contains":[
-                        "ixianpb user id"
-                    ],
-                    "example_values": [
-                        "admin"
-                    ]
-                }
-            ],
-            "render": {
-                "type": "table"
-            },
             "versions": "EQ(*)"
         },
         {
@@ -450,7 +120,7 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "Deleted successfully"
+                        "Deleted filter successfully"
                     ]
                 },
                 {
@@ -802,7 +472,7 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "Filter's IP updated successfully"
+                        "Updated the mac address criteria for a filter successfully"
                     ]
                 },
                 {
@@ -906,7 +576,7 @@
         {
             "action": "update port",
             "identifier": "update_port",
-            "description": "Update the port critera of a filter",
+            "description": "Update the port criteria of a filter",
             "type": "generic",
             "read_only": false,
             "parameters": {
@@ -986,7 +656,7 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "Filter's port updated successfully"
+                        "Updated the port criteria for a filter successfully"
                     ]
                 },
                 {
@@ -1154,7 +824,7 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "Filter's IP updated successfully"
+                        "Updated the IP address criteria for a filter successfully"
                     ]
                 },
                 {
@@ -1294,7 +964,7 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "VLAN replacement settings updated successfully"
+                        "Filter VLAN replacement settings updated successfully"
                     ]
                 },
                 {
@@ -1413,7 +1083,7 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "Created a filter"
+                        "Created filter successfully"
                     ]
                 },
                 {
@@ -1518,11 +1188,11 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "Num data: 98"
+                        "Num filters: 98"
                     ]
                 },
                 {
-                    "data_path": "action_result.summary.num_data",
+                    "data_path": "action_result.summary.num_filters",
                     "data_type": "numeric",
                     "example_values": [
                         98
