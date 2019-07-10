@@ -116,11 +116,8 @@
                     "data_type": "numeric"
                 },
                 {
-                    "data_path": "action_result.summary.num_data",
-                    "data_type": "string",
-                    "example_values": [
-                        "One item deleted succussfully"
-                    ]
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
@@ -233,11 +230,8 @@
                     "data_type": "numeric"
                 },
                 {
-                    "data_path": "action_result.summary.num_data",
-                    "data_type": "string",
-                    "example_values": [
-                        "Filter mode updated successfully"
-                    ]
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",
@@ -1009,11 +1003,8 @@
                     "data_type": "numeric"
                 },
                 {
-                    "data_path": "action_result.summary.num_data",
-                    "data_type": "string",
-                    "example_values": [
-                        "VLAN replacement settings updated successfully"
-                    ]
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.message",

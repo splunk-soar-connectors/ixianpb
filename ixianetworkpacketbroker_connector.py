@@ -295,7 +295,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         mac_add_dict = dict()
         params = dict()
 
-        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
         mac_list = ['mac_src', 'mac_dst', 'mac_src_or_dst', 'mac_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
@@ -514,7 +514,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         port_dict = dict()
         params = dict()
 
-        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
         port_list = ['layer4_dst_port', 'layer4_src_port', 'layer4_src_or_dst_port', 'layer4_port_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
@@ -640,7 +640,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         ip_add_dict = dict()
         params = dict()
 
-        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
         ipv4_list = ['ipv4_src', 'ipv4_dst', 'ipv4_src_or_dst', 'ipv4_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
@@ -765,7 +765,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         criteria = dict()
         params = dict()
 
-        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
         if (phantom.is_fail(ret_val)):
@@ -795,7 +795,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params = dict()
         data = dict()
 
-        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
         data['mode'] = MODE_MAP.get(mode, '')
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
@@ -807,10 +807,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         # Add the response into the data section
         action_result.add_data(response)
-
-        # Add a dictionary that is made up of the most important values from data into the summary
-        summary = action_result.update_summary({})
-        summary['num_data'] = "Filter mode updated successfully"
 
         return action_result.set_status(phantom.APP_SUCCESS, "Filter mode updated successfully")
 
@@ -825,7 +821,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         data = dict()
         vlan_setting = dict()
 
-        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
 
         vlan_setting['enabled'] = enables
         vlan_setting['vlan_id'] = vlan_id
@@ -842,10 +838,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
-        # Add a dictionary that is made up of the most important values from data into the summary
-        summary = action_result.update_summary({})
-        summary['num_data'] = "VLAN replacement settings updated successfully"
-
         return action_result.set_status(phantom.APP_SUCCESS, "Filter VLAN replacement settings updated successfully")
 
     def _handle_delete_filter(self, param):
@@ -861,7 +853,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         filter_id = param['filter_id_or_name']
 
         params = {}
-        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
         # make rest call
@@ -872,14 +864,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         # Add the response into the data section
         action_result.add_data(response)
-
-        # Add a dictionary that is made up of the most important values from data into the summary
-        summary = action_result.update_summary({})
-        summary['num_data'] = "One item deleted succussfully"
-
-        # Return success, no need to set the message, only the status
-        # BaseConnector will create a textual message based off of the summary dictionary
-        # return action_result.set_status(phantom.APP_SUCCESS)
 
         # For now return Error with a message, in case of success we don't set the message, but use the summary
         return action_result.set_status(phantom.APP_SUCCESS, "Deleted filter successfully")
@@ -903,7 +887,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             data['name'] = filter_name
 
         params = {}
-        params['allowtemporarydataloss'] = allowtemporarydataloss
+        params['allowTemporaryDataLoss'] = allowtemporarydataloss
 
         endpoint = IXIA_GET_FILTERS_ENDPOINT
 
@@ -925,7 +909,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         filter_id_or_name = param.get('filter_id_or_name')
         params = dict()
-        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id_or_name)
 
@@ -1017,7 +1001,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         params = dict()
-        params['allowtemporarydataloss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
 
         endpoint = IXIA_GET_FILTERS_ENDPOINT
 
