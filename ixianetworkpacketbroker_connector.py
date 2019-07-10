@@ -1049,54 +1049,36 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
 
-        return action_result.set_status(phantom.APP_SUCCESS, "System restart request sent sucessfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "System restart request sent successfully")
 
     def handle_action(self, param):
 
-        ret_val = phantom.APP_SUCCESS
-
-        # Get the action that we are supposed to execute for this App Run
-        action_id = self.get_action_identifier()
-
         self.debug_print("action_id", self.get_action_identifier())
 
-        if action_id == 'test_connectivity':
-            ret_val = self._handle_test_connectivity(param)
+        # Dictionary mapping each action with its corresponding actions
+        action_mapping = {
+            'test_connectivity': self._handle_test_connectivity,
+            'delete_filter': self._handle_delete_filter,
+            'update_vlan_replacement': self._handle_update_vlan_replacement,
+            'update_mode': self._handle_update_mode,
+            'update_operator': self._handle_update_operator,
+            'update_ip': self._handle_update_ip,
+            'update_mac': self._handle_update_mac,
+            'update_port': self._handle_update_port,
+            'create_filter': self._handle_create_filter,
+            'list_filter': self._handle_list_filters,
+            'describe_filter': self._handle_describe_filter,
+            'restart': self._handle_restart
+        }
 
-        elif action_id == 'delete_filter':
-            ret_val = self._handle_delete_filter(param)
+        action = self.get_action_identifier()
+        action_execution_status = phantom.APP_SUCCESS
 
-        elif action_id == 'update_vlan_replacement':
-            ret_val = self._handle_update_vlan_replacement(param)
+        if action in action_mapping.keys():
+            action_function = action_mapping[action]
+            action_execution_status = action_function(param)
 
-        elif action_id == 'update_mode':
-            ret_val = self._handle_update_mode(param)
-
-        elif action_id == 'update_operator':
-            ret_val = self._handle_update_operator(param)
-
-        elif action_id == 'update_ip':
-            ret_val = self._handle_update_ip(param)
-
-        elif action_id == 'update_port':
-            ret_val = self._handle_update_port(param)
-
-        elif action_id == 'update_mac':
-            ret_val = self._handle_update_mac(param)
-
-        elif action_id == 'create_filter':
-            ret_val = self._handle_create_filter(param)
-
-        elif action_id == 'list_filters':
-            ret_val = self._handle_list_filters(param)
-
-        elif action_id == 'describe_filter':
-            ret_val = self._handle_describe_filter(param)
-
-        elif action_id == 'restart':
-            ret_val = self._handle_restart(param)
-
-        return ret_val
+        return action_execution_status
 
     def initialize(self):
 

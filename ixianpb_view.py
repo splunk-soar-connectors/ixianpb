@@ -1,5 +1,5 @@
-# File: crowdstrike_view.py
-# Copyright (c) 2016-2019 Splunk Inc.
+# File: ixianpb_view.py
+# Copyright (c) 2019 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -138,8 +138,8 @@ def _get_ctx_result(result, provides):
                 if isinstance(temp, dict):
                     flow_type = temp.get('flow_type')
                     for i in temp.get("port_sets"):
-                        src = ' or '.join(i.get('port_a'))
-                        dst = ' or '.join(i.get('port_b'))
+                        src = i.get('port_a')
+                        dst = i.get('port_b')
                         uni = "{} {} {}".format(src, flow_type, dst)
                         flow_list.append(uni)
                 else:
@@ -147,8 +147,8 @@ def _get_ctx_result(result, provides):
                         uni_list = []
                         flow_type = i.get('flow_type')
                         for j in i.get("address_sets"):
-                            src = ' or '.join(j.get('port_a'))
-                            dst = ' or '.join(j.get('port_b'))
+                            src = j.get('port_a')
+                            dst = j.get('port_b')
                             uni = "{} {} {}".format(src, flow_type, dst)
                             uni_list.append(uni)
 
