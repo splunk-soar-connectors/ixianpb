@@ -295,7 +295,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         mac_add_dict = dict()
         params = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
         mac_list = ['mac_src', 'mac_dst', 'mac_src_or_dst', 'mac_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
@@ -514,7 +514,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         port_dict = dict()
         params = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
         port_list = ['layer4_dst_port', 'layer4_src_port', 'layer4_src_or_dst_port', 'layer4_port_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
@@ -640,7 +640,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         ip_add_dict = dict()
         params = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
         ipv4_list = ['ipv4_src', 'ipv4_dst', 'ipv4_src_or_dst', 'ipv4_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
@@ -765,7 +765,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         criteria = dict()
         params = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
         if (phantom.is_fail(ret_val)):
@@ -795,7 +795,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params = dict()
         data = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
         data['mode'] = MODE_MAP.get(mode, '')
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
@@ -821,7 +821,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         data = dict()
         vlan_setting = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
 
         vlan_setting['enabled'] = enables
         vlan_setting['vlan_id'] = vlan_id
@@ -853,7 +853,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         filter_id = param['filter_id_or_name']
 
         params = {}
-        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
         # make rest call
@@ -878,7 +878,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         # Optional values should use the .get() function
-        allowtemporarydataloss = param.get('allowtemporarydataloss')
+        allow_temporary_data_loss = param.get('allow_temporary_data_loss')
         filter_name = param.get('filter_name')
 
         data = None
@@ -887,7 +887,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             data['name'] = filter_name
 
         params = {}
-        params['allowTemporaryDataLoss'] = allowtemporarydataloss
+        params['allowTemporaryDataLoss'] = allow_temporary_data_loss
 
         endpoint = IXIA_GET_FILTERS_ENDPOINT
 
@@ -909,7 +909,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         filter_id_or_name = param.get('filter_id_or_name')
         params = dict()
-        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id_or_name)
 
@@ -1001,7 +1001,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         params = dict()
-        params['allowTemporaryDataLoss'] = param.get('allowtemporarydataloss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
 
         endpoint = IXIA_GET_FILTERS_ENDPOINT
 
