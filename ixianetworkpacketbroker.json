@@ -123,7 +123,7 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "Deleted filter successfully"
+                        "Filter deleted successfully"
                     ]
                 },
                 {
@@ -1105,7 +1105,7 @@
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        "Created filter successfully"
+                        "Filter created successfully"
                     ]
                 },
                 {
@@ -1372,10 +1372,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.description",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.dest_port_group_list",
@@ -1474,10 +1471,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.CONNECT_IN_ACCESS_SETTINGS.user_names",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.CONNECT_IN_ACCESS_SETTINGS.users_statement",
@@ -1523,10 +1517,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.CONNECT_OUT_ACCESS_SETTINGS.user_names",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.CONNECT_OUT_ACCESS_SETTINGS.users_statement",
@@ -1572,10 +1563,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.MODIFY_ACCESS_SETTINGS.user_names",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.MODIFY_ACCESS_SETTINGS.users_statement",
@@ -1621,10 +1609,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.RESOURCE_ACCESS_SETTINGS.user_names",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.RESOURCE_ACCESS_SETTINGS.users_statement",
@@ -1670,10 +1655,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.VIEW_ACCESS_SETTINGS.user_names",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.VIEW_ACCESS_SETTINGS.users_statement",
@@ -1858,10 +1840,7 @@
                 },
                 {
                     "data_path": "action_result.data.*.snmp_tag",
-                    "data_type": "string",
-                    "example_values": [
-                        ""
-                    ]
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.source_port_group_list",

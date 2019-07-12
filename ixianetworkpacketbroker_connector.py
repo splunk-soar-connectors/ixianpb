@@ -189,7 +189,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         # If token is expired, generate a new token
         msg = action_result.get_message()
-        # if msg and 'token is invalid' in msg or 'token has expired' in msg or 'ExpiredAuthenticationToken' in msg or 'authentication failed' in msg or 'access denied ' in msg:
+
         if msg and "Unauthorized" in msg:
             self.save_progress("bad token")
             ret_val = self._get_token(action_result)
@@ -866,7 +866,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         action_result.add_data(response)
 
         # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_SUCCESS, "Deleted filter successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Filter deleted successfully")
 
     def _handle_create_filter(self, param):
 
@@ -899,7 +899,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Created filter successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Filter created successfully")
 
     def _handle_describe_filter(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -1050,7 +1050,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             'update_mac': self._handle_update_mac,
             'update_port': self._handle_update_port,
             'create_filter': self._handle_create_filter,
-            'list_filter': self._handle_list_filters,
+            'list_filters': self._handle_list_filters,
             'describe_filter': self._handle_describe_filter,
             'restart': self._handle_restart
         }
