@@ -75,7 +75,6 @@
                     "description": "Allow Temporary Data Loss",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 1
                 }
@@ -113,7 +112,7 @@
                 },
                 {
                     "data_path": "action_result.data",
-                    "data_type": "numeric"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -167,7 +166,6 @@
                     "description": "Mode of a filter",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
                     "value_list": [
                         "Pass All",
                         "Pass By Criteria",
@@ -182,7 +180,6 @@
                     "description": "Allow Temporary Data Loss",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 2
                 }
@@ -227,7 +224,7 @@
                 },
                 {
                     "data_path": "action_result.data",
-                    "data_type": "numeric"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -281,7 +278,6 @@
                     "description": "Operator of a filter",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
                     "value_list": [
                         "AND",
                         "OR"
@@ -292,7 +288,6 @@
                     "description": "Allow Temporary Data Loss",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 2
                 }
@@ -337,7 +332,7 @@
                 },
                 {
                     "data_path": "action_result.data",
-                    "data_type": "numeric"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -391,7 +386,6 @@
                     "description": "Type",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
                     "value_list": [
                         "Source",
                         "Destination",
@@ -405,42 +399,36 @@
                     "description": "Admin type",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 2
                 },
                 "destination_address": {
                     "description": "Destination address",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 3
                 },
                 "source_mac": {
                     "description": "Source MAC addresses to be added",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 4
                 },
                 "destination_mac": {
                     "description": "Destination MAC addresses to be added",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 5
                 },
                 "source_or_destination_mac": {
                     "description": "Source or Destination IP addresses to be added",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 6
                 },
                 "overwrite": {
                     "description": "Overwrites all the MAC related rules in the filter with the specified rule in the action run",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 7
                 },
@@ -448,7 +436,6 @@
                     "description": "Allow Temporary Data Loss",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 8
                 }
@@ -536,7 +523,7 @@
                 },
                 {
                     "data_path": "action_result.data",
-                    "data_type": "numeric"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -590,7 +577,6 @@
                     "description": "Type",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
                     "value_list": [
                         "Source",
                         "Destination",
@@ -604,28 +590,24 @@
                     "description": "Source IP addresses to be added",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 2
                 },
                 "destination_port": {
                     "description": "Destination IP addresses to be added",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 3
                 },
                 "source_or_destination_port": {
                     "description": "Source or Destination IP addresses to be added",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 4
                 },
                 "overwrite": {
                     "description": "Overwrites all the port related rules in the filter with the specified rule in the action run",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 5
                 },
@@ -633,7 +615,6 @@
                     "description": "Allow Temporary Data Loss",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 6
                 }
@@ -707,7 +688,7 @@
                 },
                 {
                     "data_path": "action_result.data",
-                    "data_type": "numeric"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -761,7 +742,6 @@
                     "description": "Type",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
                     "value_list": [
                         "Source",
                         "Destination",
@@ -775,28 +755,24 @@
                     "description": "Source IP addresses to be added",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 2
                 },
                 "destination_ip": {
                     "description": "Destination IP addresses to be added",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 3
                 },
                 "source_or_destination_ip": {
                     "description": "Source or Destination IP addresses to be added",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 4
                 },
                 "overwrite": {
                     "description": "Overwrites all the IP related rules in the filter with the specified rule in the action run",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 5
                 },
@@ -804,7 +780,6 @@
                     "description": "Allow Temporary Data Loss",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 6
                 }
@@ -878,7 +853,7 @@
                 },
                 {
                     "data_path": "action_result.data",
-                    "data_type": "numeric"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -928,28 +903,25 @@
                     ],
                     "order": 0
                 },
-                "allowtemporarydataloss": {
-                    "description": "Allow Temporary Data Loss",
-                    "data_type": "boolean",
-                    "required": false,
-                    "primary": false,
-                    "default": false,
-                    "order": 3
-                },
                 "vlan_id": {
                     "description": "VLAN Identifier",
                     "data_type": "numeric",
                     "required": true,
-                    "primary": false,
                     "order": 1
                 },
                 "enable": {
                     "description": "Enables",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": true,
                     "order": 2
+                },
+                "allowtemporarydataloss": {
+                    "description": "Allow Temporary Data Loss",
+                    "data_type": "boolean",
+                    "required": false,
+                    "default": false,
+                    "order": 3
                 }
             },
             "output": [
@@ -1000,7 +972,7 @@
                 },
                 {
                     "data_path": "action_result.data",
-                    "data_type": "numeric"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
@@ -1037,6 +1009,7 @@
             "action": "create filter",
             "identifier": "create_filter",
             "description": "Creates a new filter on the instance",
+            "verbose": "",
             "type": "generic",
             "read_only": false,
             "parameters": {
@@ -1044,14 +1017,12 @@
                     "description": "Name of the filter",
                     "data_type": "string",
                     "required": false,
-                    "primary": false,
                     "order": 0
                 },
                 "allowtemporarydataloss": {
                     "description": "Allow Temporary Data Loss",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 1
                 }
@@ -1139,7 +1110,6 @@
                     "description": "Allow Temporary Data Loss",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 0
                 }
@@ -1240,7 +1210,6 @@
                     "description": "Allow Temporary Data Loss",
                     "data_type": "boolean",
                     "required": false,
-                    "primary": false,
                     "default": false,
                     "order": 1
                 }
@@ -1250,7 +1219,8 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "example_values": [
-                        "success"
+                        "success",
+                        "failed"
                     ]
                 },
                 {
@@ -1273,7 +1243,7 @@
                 },
                 {
                     "data_path": "action_result.data",
-                    "data_type": "numeric"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.data.*.connect_in_access_settings.policy",
@@ -1445,14 +1415,14 @@
                     "data_path": "action_result.data.*.misc.access_map.CONNECT_IN_ACCESS_SETTINGS.current_value",
                     "data_type": "string",
                     "example_values": [
-                        "All users."
+                        "All users"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.misc.access_map.CONNECT_IN_ACCESS_SETTINGS.expression_text",
                     "data_type": "string",
                     "example_values": [
-                        "All users."
+                        "All users"
                     ]
                 },
                 {
@@ -1498,7 +1468,7 @@
                     "data_path": "action_result.data.*.misc.access_map.CONNECT_OUT_ACCESS_SETTINGS.expression_text",
                     "data_type": "string",
                     "example_values": [
-                        "All users."
+                        "All users"
                     ]
                 },
                 {
@@ -1544,7 +1514,7 @@
                     "data_path": "action_result.data.*.misc.access_map.MODIFY_ACCESS_SETTINGS.expression_text",
                     "data_type": "string",
                     "example_values": [
-                        "All users."
+                        "All users"
                     ]
                 },
                 {
@@ -1590,7 +1560,7 @@
                     "data_path": "action_result.data.*.misc.access_map.RESOURCE_ACCESS_SETTINGS.expression_text",
                     "data_type": "string",
                     "example_values": [
-                        "All users."
+                        "All users"
                     ]
                 },
                 {
@@ -1636,7 +1606,7 @@
                     "data_path": "action_result.data.*.misc.access_map.VIEW_ACCESS_SETTINGS.expression_text",
                     "data_type": "string",
                     "example_values": [
-                        "All users."
+                        "All users"
                     ]
                 },
                 {
@@ -1926,7 +1896,7 @@
                 },
                 {
                     "data_path": "action_result.data",
-                    "data_type": "numeric"
+                    "data_type": "string"
                 },
                 {
                     "data_path": "action_result.summary",
