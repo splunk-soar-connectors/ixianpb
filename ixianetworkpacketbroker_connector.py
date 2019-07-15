@@ -547,9 +547,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
 
-            # if not isinstance(port_1, list):
-                # return action_result.set_status(phantom.APP_ERROR, "Please provide {} input in a valid format".format(PORT_TYPE_MAP[type][1]))
-
             for item in port_1:
                 data = {}
                 data["port"] = ','.join(item)
@@ -589,9 +586,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
-
-            if not isinstance(port_1, list) or not isinstance(port_2, list):
-                return action_result.set_status(phantom.APP_ERROR, "Please provide source_port and destination_port input in a valid format")
 
             if len(port_1) != len(port_2):
                 return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
@@ -674,9 +668,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
 
-            # if not isinstance(ip_address_1, list):
-                # return action_result.set_status(phantom.APP_ERROR, "Please provide {} input in a valid format".format(IP_TYPE_MAP[type][1]))
-
             for item in ip_address_1:
                 data = {}
                 data["addr"] = item
@@ -716,9 +707,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
-
-            # if not isinstance(ip_address_1, list) or not isinstance(ip_address_2, list):
-                # return action_result.set_status(phantom.APP_ERROR, "Please provide source_ip and destination_ip input in a valid format")
 
             if len(ip_address_1) != len(ip_address_2):
                 return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")

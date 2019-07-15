@@ -383,7 +383,7 @@
                     "order": 0
                 },
                 "type": {
-                    "description": "Type",
+                    "description": "Type of MAC address criteria",
                     "data_type": "string",
                     "required": true,
                     "value_list": [
@@ -574,7 +574,7 @@
                     "order": 0
                 },
                 "type": {
-                    "description": "Type",
+                    "description": "Type of port criteria",
                     "data_type": "string",
                     "required": true,
                     "value_list": [
@@ -739,7 +739,7 @@
                     "order": 0
                 },
                 "type": {
-                    "description": "Type",
+                    "description": "Type of IP address criteria",
                     "data_type": "string",
                     "required": true,
                     "value_list": [
@@ -910,7 +910,7 @@
                     "order": 1
                 },
                 "enable": {
-                    "description": "Enables",
+                    "description": "Enables the VLAN replacement",
                     "data_type": "boolean",
                     "required": false,
                     "default": true,
