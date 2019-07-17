@@ -41,7 +41,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         self._verify = None
         self._res_headers = None
         self._oauth_access_token = None
-        self._proxy = None
 
     def _process_empty_response(self, response, action_result):
 
@@ -147,7 +146,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Invalid method: {0}".format(method)), resp_json)
 
         try:
-            r = request_func(endpoint, json=json, data=data, proxies=self._proxy, headers=headers, verify=verify, params=params)
+            r = request_func(endpoint, json=json, data=data, headers=headers, verify=verify, params=params)
         except Exception as e:
             return RetVal(action_result.set_status(phantom.APP_ERROR, "Error Connecting to server. Details: {0}"
                                                    .format(str(e))), resp_json)
@@ -171,7 +170,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         """
 
         url = "{0}{1}".format(self._base_url, endpoint)
-        if (headers is None):
+        if headers is None:
             headers = {}
 
         token = self._state.get('access_token', {})
@@ -191,7 +190,6 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         msg = action_result.get_message()
 
         if msg and "Unauthorized" in msg:
-            self.save_progress("bad token")
             ret_val = self._get_token(action_result)
 
             if phantom.is_fail(ret_val):
@@ -288,14 +286,14 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         filter_id = param['filter_id_or_name']
-        type = param['type']
-        overwrite = param['overwrite']
+        criteria_type = param['type']
+        overwrite = param.get('overwrite', False)
 
         criteria = dict()
         mac_add_dict = dict()
         params = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
         mac_list = ['mac_src', 'mac_dst', 'mac_src_or_dst', 'mac_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
@@ -309,7 +307,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 except:
                     pass
 
-        type_map = MAC_TYPE_MAP[type][0]
+        type_map = MAC_TYPE_MAP[criteria_type][0]
 
         if type_map == "mac_src":
 
@@ -321,7 +319,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 try:
                     mac_address_1 = json.loads(mac_address_1)
                 except Exception as e:
-                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
                 ret_val = self.check_input(mac_address_1, 'source_mac', action_result)
 
@@ -336,7 +334,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 try:
                     admin_type = json.loads(admin_type)
                 except Exception as e:
-                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
                 if not isinstance(admin_type, list):
                     return action_result.set_status(phantom.APP_ERROR, "Please provide administration input in a valid JSON format")
@@ -369,7 +367,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 try:
                     mac_address_1 = json.loads(mac_address_1)
                 except Exception as e:
-                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
                 ret_val = self.check_input(mac_address_1, 'destination_mac', action_result)
 
@@ -385,7 +383,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                     admin_type = json.loads(admin_type)
                     destination_addr = json.loads(destination_addr)
                 except Exception as e:
-                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
                 if not isinstance(admin_type, list) or not isinstance(destination_addr, list):
                     return action_result.set_status(phantom.APP_ERROR, "Please provide administration and destination_address input in a valid JSON format")
@@ -420,7 +418,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 try:
                     mac_address_1 = json.loads(mac_address_1)
                 except Exception as e:
-                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                    return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
                 ret_val = self.check_input(mac_address_1, 'source_or_destination_mac', action_result)
 
@@ -447,7 +445,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             criteria_resp.update(mac_add_dict)
 
         else:
-            flow_type = MAC_TYPE_MAP[type][1]
+            flow_type = MAC_TYPE_MAP[criteria_type][1]
             flow = dict()
             address_set = list()
             flow_list = list()
@@ -455,7 +453,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 mac_address_1 = json.loads(param.get('source_mac'))
                 mac_address_2 = json.loads(param.get('destination_mac'))
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
             ret_val = self.check_input(mac_address_1, 'source_mac', action_result)
 
@@ -468,7 +466,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 return action_result.get_status()
 
             if len(mac_address_1) != len(mac_address_2):
-                return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
+                return action_result.set_status(phantom.APP_ERROR, "Length of source_mac and destination_mac must be same")
 
             for i, j in enumerate(mac_address_1):
                 data = {}
@@ -501,20 +499,20 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Updated the MAC address criteria for a filter successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Updated the MAC address criteria for the filter successfully")
 
     def _handle_update_port(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         filter_id = param['filter_id_or_name']
-        type = param['type']
-        overwrite = param['overwrite']
+        criteria_type = param['type']
+        overwrite = param.get('overwrite', False)
 
         criteria = dict()
         port_dict = dict()
         params = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
         port_list = ['layer4_dst_port', 'layer4_src_port', 'layer4_src_or_dst_port', 'layer4_port_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
@@ -528,21 +526,21 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 except:
                     pass
 
-        type_map = PORT_TYPE_MAP[type][0]
+        type_map = PORT_TYPE_MAP[criteria_type][0]
 
         if type_map != "layer4_port_flow":
 
             port_list = list()
-            port_1 = param.get(PORT_TYPE_MAP[type][1])
+            port_1 = param.get(PORT_TYPE_MAP[criteria_type][1])
 
             if not port_1:
-                return action_result.set_status(phantom.APP_ERROR, "Please provide value in {} parameter".format(PORT_TYPE_MAP[type][1]))
+                return action_result.set_status(phantom.APP_ERROR, "Please provide value in {} parameter".format(PORT_TYPE_MAP[criteria_type][1]))
             try:
                 port_1 = json.loads(port_1)
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
-            ret_val = self.check_input(port_1, PORT_TYPE_MAP[type][1], action_result)
+            ret_val = self.check_input(port_1, PORT_TYPE_MAP[criteria_type][1], action_result)
 
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
@@ -564,10 +562,10 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             criteria_resp.update(port_dict)
 
         elif not param.get('source_port') or not param.get('destination_port'):
-            return action_result.set_status(phantom.APP_ERROR, "Please provide value in both source_port and destination_port parameters")
+            return action_result.set_status(phantom.APP_ERROR, "Please provide both the source_port and the destination_port parameters values")
 
         else:
-            flow_type = PORT_TYPE_MAP[type][1]
+            flow_type = PORT_TYPE_MAP[criteria_type][1]
             flow = dict()
             port_set = list()
             flow_list = list()
@@ -575,7 +573,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 port_1 = json.loads(param.get('source_port'))
                 port_2 = json.loads(param.get('destination_port'))
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
             ret_val = self.check_input(port_1, 'source_port', action_result)
 
@@ -588,7 +586,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 return action_result.get_status()
 
             if len(port_1) != len(port_2):
-                return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
+                return action_result.set_status(phantom.APP_ERROR, "Length of source and destination must be same")
 
             for i, j in enumerate(port_1):
                 data = {}
@@ -621,20 +619,20 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Updated the port criteria for a filter successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Updated the port criteria for the filter successfully")
 
     def _handle_update_ip(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         filter_id = param['filter_id_or_name']
-        type = param['type']
-        overwrite = param['overwrite']
+        criteria_type = param['type']
+        overwrite = param.get('overwrite', False)
 
         criteria = dict()
         ip_add_dict = dict()
         params = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
         ipv4_list = ['ipv4_src', 'ipv4_dst', 'ipv4_src_or_dst', 'ipv4_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
@@ -648,22 +646,22 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 except:
                     pass
 
-        type_map = IP_TYPE_MAP[type][0]
+        type_map = IP_TYPE_MAP[criteria_type][0]
 
         if type_map != "ipv4_flow":
 
             ip_list = list()
-            ip_address_1 = param.get(IP_TYPE_MAP[type][1])
+            ip_address_1 = param.get(IP_TYPE_MAP[criteria_type][1])
 
             if not ip_address_1:
-                return action_result.set_status(phantom.APP_ERROR, "Please provide value in {} parameter".format(IP_TYPE_MAP[type][1]))
+                return action_result.set_status(phantom.APP_ERROR, "Please provide value in {} parameter".format(IP_TYPE_MAP[criteria_type][1]))
 
             try:
                 ip_address_1 = json.loads(ip_address_1)
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
-            ret_val = self.check_input(ip_address_1, IP_TYPE_MAP[type][1], action_result)
+            ret_val = self.check_input(ip_address_1, IP_TYPE_MAP[criteria_type][1], action_result)
 
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
@@ -688,7 +686,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, "Please provide value in both source_id and destination_id parameters")
 
         else:
-            flow_type = IP_TYPE_MAP[type][1]
+            flow_type = IP_TYPE_MAP[criteria_type][1]
             flow = dict()
             address_set = list()
             flow_list = list()
@@ -696,7 +694,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 ip_address_1 = json.loads(param.get('source_ip'))
                 ip_address_2 = json.loads(param.get('destination_ip'))
             except Exception as e:
-                return action_result.set_status(phantom.APP_ERROR, "Error while parsing into JSON. Error: {}".format(str(e)))
+                return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
             ret_val = self.check_input(ip_address_1, 'source_ip', action_result)
 
@@ -709,7 +707,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 return action_result.get_status()
 
             if len(ip_address_1) != len(ip_address_2):
-                return action_result.set_status(phantom.APP_ERROR, "Lenght of source and destination must be same")
+                return action_result.set_status(phantom.APP_ERROR, "Length of source and destination must be same")
 
             for i, j in enumerate(ip_address_1):
                 data = {}
@@ -742,7 +740,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Updated the IP address criteria for a filter successfully")
+        return action_result.set_status(phantom.APP_SUCCESS, "Updated the IP address criteria for the filter successfully")
 
     def _handle_update_operator(self, param):
         action_result = self.add_action_result(ActionResult(dict(param)))
@@ -753,7 +751,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         criteria = dict()
         params = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
         if (phantom.is_fail(ret_val)):
@@ -783,7 +781,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params = dict()
         data = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
         data['mode'] = MODE_MAP.get(mode, '')
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
@@ -803,13 +801,13 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         filter_id = param['filter_id_or_name']
         vlan_id = param['vlan_id']
-        enables = param['enable']
+        enables = param.get('enable', False)
 
         params = dict()
         data = dict()
         vlan_setting = dict()
 
-        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
 
         vlan_setting['enabled'] = enables
         vlan_setting['vlan_id'] = vlan_id
@@ -841,7 +839,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         filter_id = param['filter_id_or_name']
 
         params = {}
-        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
         # make rest call
@@ -866,7 +864,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         # Optional values should use the .get() function
-        allow_temporary_data_loss = param.get('allow_temporary_data_loss')
+        allow_temporary_data_loss = param.get('allow_temporary_data_loss', False)
         filter_name = param.get('filter_name')
 
         data = None
@@ -877,10 +875,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params = {}
         params['allowTemporaryDataLoss'] = allow_temporary_data_loss
 
-        endpoint = IXIA_GET_FILTERS_ENDPOINT
-
         # make rest call
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="post")
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, verify=self._verify, params=params, headers=None, json=data, method="post")
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
@@ -897,7 +893,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         filter_id_or_name = param.get('filter_id_or_name')
         params = dict()
-        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id_or_name)
 
@@ -939,11 +935,11 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                     port_grp_detail['name'] = resp_port_grp_dict[i]
                     destination_list.append(port_grp_detail)
 
-            group_dic = dict()
-            group_dic['source_list'] = source_list
-            group_dic['destination_list'] = destination_list
+            group_dict = dict()
+            group_dict['source_list'] = source_list
+            group_dict['destination_list'] = destination_list
 
-            response['port_group_list'] = group_dic
+            response['port_group_list'] = group_dict
 
         if src_port_list or dst_port_list:
 
@@ -971,11 +967,11 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                     port_grp_detail['name'] = dst_port_list[i]
                     destination_list.append(port_grp_detail)
 
-            group_dic = dict()
-            group_dic['source_list'] = source_list
-            group_dic['destination_list'] = destination_list
+            group_dict = dict()
+            group_dict['source_list'] = source_list
+            group_dict['destination_list'] = destination_list
 
-            response['port_list'] = group_dic
+            response['port_list'] = group_dict
 
         action_result.add_data(response)
 
@@ -989,11 +985,9 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         params = dict()
-        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss')
+        params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
 
-        endpoint = IXIA_GET_FILTERS_ENDPOINT
-
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params)
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, verify=self._verify, params=params)
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
@@ -1014,9 +1008,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         # make rest call
-        endpoint = IXIA_RESTART_ENDPOINT
-
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, method="post")
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_RESTART_ENDPOINT, verify=self._verify, method="post")
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
@@ -1067,15 +1059,10 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         self._base_url = config['endpoint']
 
+        if self._base_url[-1] == '/':
+            self._base_url = self._base_url[:-1]
+
         self._oauth_access_token = self._state.get('access_token', {})
-
-        self._proxy = {}
-        env_vars = config.get('_reserved_environment_variables', {})
-
-        if 'HTTP_PROXY' in env_vars:
-            self._proxy['http'] = env_vars['HTTP_PROXY']['value']
-        if 'HTTPS_PROXY' in env_vars:
-            self._proxy['https'] = env_vars['HTTPS_PROXY']['value']
 
         return phantom.APP_SUCCESS
 
