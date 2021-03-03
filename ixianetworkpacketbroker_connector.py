@@ -212,10 +212,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         :return: status(phantom.APP_SUCCESS/phantom.APP_ERROR)
         """
 
-        creds = self._username + ':' + self._password
-        creds_bytes = creds.encode("utf-8")
-        encoded_creds = base64.b64encode(creds_bytes)
-        token1 = "Basic {}".format(encoded_creds)
+        encoded_creds = base64.b64encode("{}:{}".format(self._username, self._password).encode())
+        token1 = "Basic {}".format(encoded_creds.decode())
 
         headers = {
             'Authorization': token1
@@ -1064,7 +1062,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if self._base_url[-1] == '/':
             self._base_url = self._base_url[:-1]
 
-        self._oauth_access_token = {}
+        # self._oauth_access_token = self._state.get('access_token', {})
 
         return phantom.APP_SUCCESS
 
