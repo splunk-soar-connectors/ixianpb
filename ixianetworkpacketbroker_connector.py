@@ -1062,7 +1062,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if self._base_url[-1] == '/':
             self._base_url = self._base_url[:-1]
 
-        # self._oauth_access_token = self._state.get('access_token', {})
+        self._oauth_access_token = self._state.get('access_token', {})
 
         return phantom.APP_SUCCESS
 
