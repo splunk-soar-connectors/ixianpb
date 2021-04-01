@@ -1,5 +1,5 @@
 # File: ixianetworkpacketbroker_connector.py
-# Copyright (c) 2019 Splunk Inc.
+# Copyright (c) 2019-2021 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -66,7 +66,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         message = "Status Code: {0}. Data from server:\n{1}\n".format(status_code,
                 error_text)
 
-        message = message.replace(u'{', '{{').replace(u'}', '}}')
+        message = message.replace('{', '{{').replace('}', '}}')
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
@@ -86,7 +86,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         # You should process the error returned in the json
         message = "Error from server. Status Code: {0} Data from server: {1}".format(
-                r.status_code, r.text.replace(u'{', '{{').replace(u'}', '}}'))
+                r.status_code, r.text.replace('{', '{{').replace('}', '}}'))
 
         if r.status_code == 401:
             message = "Error from server. Status Code: {}. Reason: {}. Description: {}".format(r.status_code, resp_json.get('reasonPhrase'), resp_json.get('description'))
@@ -212,8 +212,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         :return: status(phantom.APP_SUCCESS/phantom.APP_ERROR)
         """
 
-        encoded_creds = base64.b64encode("{}:{}".format(self._username, self._password))
-        token1 = "Basic {}".format(encoded_creds)
+        encoded_creds = base64.b64encode("{}:{}".format(self._username, self._password).encode())
+        token1 = "Basic {}".format(encoded_creds.decode())
 
         headers = {
             'Authorization': token1
@@ -1038,7 +1038,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         action = self.get_action_identifier()
         action_execution_status = phantom.APP_SUCCESS
 
-        if action in action_mapping.keys():
+        if action in list(action_mapping.keys()):
             action_function = action_mapping[action]
             action_execution_status = action_function(param)
 

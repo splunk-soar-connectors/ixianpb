@@ -1,5 +1,5 @@
 # File: ixianpb_view.py
-# Copyright (c) 2019 Splunk Inc.
+# Copyright (c) 2019-2021 Splunk Inc.
 #
 # SPLUNK CONFIDENTIAL - Use or disclosure of this material in whole or in part
 # without a valid written license from Splunk Inc. is PROHIBITED.
@@ -163,7 +163,7 @@ def _get_ctx_result(result, provides):
                     if temp.get("addr"):
                         mac_src_1.append(temp.get('addr'))
                     elif temp.get("admin_type") == "LOCAL":
-                            mac_src_2.append("Any locally administered address")
+                        mac_src_2.append("Any locally administered address")
                     elif temp.get("admin_type") == "UNIVERSAL":
                         mac_src_2.append("Any universally administered address")
                 else:
@@ -227,7 +227,6 @@ def _get_ctx_result(result, provides):
                             dst = ' or '.join(j.get('addr_b'))
                             uni = "{} {} {}".format(src, flow_type, dst)
                             uni_list.append(uni)
-
 
                         uni = ' or '.join(uni_list)
                         flow_list.append(uni)
