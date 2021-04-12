@@ -1,7 +1,7 @@
 {
     "appid": "4a7da742-927a-40a9-bd50-1a61c2ff78df",
     "name": "Ixia Network Packet Broker",
-    "description": "This app supports a variety of actions on the network packet broker platform. This App has been tested with Vision ONE",
+    "description": "This app supports a variety of actions on the network packet broker platform. This app has been tested with Vision ONE",
     "type": "network device",
     "product_vendor": "Ixia",
     "logo": "logo_ixianetworkpacketbroker.svg",
