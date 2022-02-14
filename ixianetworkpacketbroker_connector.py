@@ -1,6 +1,6 @@
 # File: ixianetworkpacketbroker_connector.py
 #
-# Copyright (c) 2019-2021 Splunk Inc.
+# Copyright (c) 2019-2022 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -231,7 +231,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         ret_val, resp_json = self._make_rest_call_oauth2("{}{}".format(self._base_url, TOKEN_URL), action_result, verify=self._verify, headers=headers, method='post')
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         self._state['access_token'] = self._res_headers.get('X-Auth-Token')
@@ -260,7 +260,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # make rest call
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, verify=self._verify, params=None, headers=None)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             self.save_progress("Test Connectivity Failed")
             return action_result.get_status()
 
@@ -272,7 +272,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status(), None
 
         if response.get('criteria'):
@@ -307,7 +307,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         mac_list = ['mac_src', 'mac_dst', 'mac_src_or_dst', 'mac_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         if overwrite:
@@ -503,7 +503,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         # Add the response into the data section
@@ -526,7 +526,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         port_list = ['layer4_dst_port', 'layer4_src_port', 'layer4_src_or_dst_port', 'layer4_port_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         if overwrite:
@@ -623,7 +623,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         # Add the response into the data section
@@ -646,7 +646,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         ipv4_list = ['ipv4_src', 'ipv4_dst', 'ipv4_src_or_dst', 'ipv4_flow']
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         if overwrite:
@@ -744,7 +744,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         # Add the response into the data section
@@ -764,7 +764,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
 
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         criteria_resp.update({'logical_operation': operator})
@@ -774,7 +774,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         # Add the response into the data section
@@ -798,7 +798,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="put")
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         # Add the response into the data section
@@ -828,7 +828,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="put")
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         # Add the response into the data section
@@ -855,7 +855,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # make rest call
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, method="delete")
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         # Add the response into the data section
@@ -888,7 +888,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # make rest call
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, verify=self._verify, params=params, headers=None, json=data, method="post")
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         action_result.add_data(response)
@@ -909,7 +909,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         src_port_grp_list = response.get('source_port_group_list')
@@ -922,7 +922,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
             ret_val, resp = self._make_rest_call_helper_oauth2(action_result, '/api/port_groups', verify=self._verify, params=params)
 
-            if (phantom.is_fail(ret_val)):
+            if phantom.is_fail(ret_val):
                 return action_result.get_status()
 
             for item in resp:
@@ -955,7 +955,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
             ret_val, resp = self._make_rest_call_helper_oauth2(action_result, '/api/ports', verify=self._verify, params=params)
 
-            if (phantom.is_fail(ret_val)):
+            if phantom.is_fail(ret_val):
                 return action_result.get_status()
 
             for item in resp:
@@ -999,7 +999,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, verify=self._verify, params=params)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         for item in response:
@@ -1020,7 +1020,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # make rest call
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_RESTART_ENDPOINT, verify=self._verify, method="post")
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             return action_result.get_status()
 
         return action_result.set_status(phantom.APP_SUCCESS, "System restart request sent successfully")
@@ -1087,6 +1087,7 @@ if __name__ == '__main__':
 
     import pudb
     import argparse
+    import sys
 
     pudb.set_trace()
 
@@ -1108,10 +1109,13 @@ if __name__ == '__main__':
         import getpass
         password = getpass.getpass("Password: ")
 
-    if (username and password):
+    if username and password:
         try:
+
+            login_url = IxiaNetworkPacketBrokerConnector._get_phantom_base_url() + '/login'
+
             print ("Accessing the Login page")
-            r = requests.get("https://127.0.0.1/login", verify=False)
+            r = requests.get(login_url, verify=False,  timeout=60)
             csrftoken = r.cookies['csrftoken']
 
             data = dict()
@@ -1121,14 +1125,14 @@ if __name__ == '__main__':
 
             headers = dict()
             headers['Cookie'] = 'csrftoken=' + csrftoken
-            headers['Referer'] = 'https://127.0.0.1/login'
+            headers['Referer'] = login_url
 
             print ("Logging into Platform to get the session id")
-            r2 = requests.post("https://127.0.0.1/login", verify=False, data=data, headers=headers)
+            r2 = requests.post(login_url, verify=False, data=data, headers=headers, timeout=60)
             session_id = r2.cookies['sessionid']
         except Exception as e:
             print ("Unable to get session id from the platform. Error: " + str(e))
-            exit(1)
+            sys.exit(1)
 
     with open(args.input_test_json) as f:
         in_json = f.read()
@@ -1138,11 +1142,11 @@ if __name__ == '__main__':
         connector = IxiaNetworkPacketBrokerConnector()
         connector.print_progress_message = True
 
-        if (session_id is not None):
+        if session_id is not None:
             in_json['user_session_token'] = session_id
             connector._set_csrf_info(csrftoken, headers['Referer'])
 
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print (json.dumps(json.loads(ret_val), indent=4))
 
-    exit(0)
+    sys.exit(0)
