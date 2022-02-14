@@ -12,7 +12,7 @@
 # the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
 # either express or implied. See the License for the specific language governing permissions
 # and limitations under the License.
-def _get_ctx_result(result, provides):
+def _get_ctx_result(result, provides):  #noqa:C901
 
     ctx_result = {}
     data_final = {}

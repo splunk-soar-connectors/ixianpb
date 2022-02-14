@@ -297,7 +297,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, 'The input parameter {} must be in proper JSON (list of list) format.\
             Example :- [["X","Y"], ["Z"]]'.format(inp_name))
 
-    def _handle_update_mac(self, param):
+    def _handle_update_mac(self, param):    #noqa:C901
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         filter_id = param['filter_id_or_name']
