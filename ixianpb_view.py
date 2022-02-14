@@ -191,14 +191,16 @@ def _get_ctx_result(result, provides):
                     if temp.get("addr"):
                         mac_dst_1.append(' or '.join(temp.get('addr')))
                     else:
-                        mac_dst_2.append("Any {}ly administered {} address".format(temp.get("admin_type").lower(), temp.get("dest_addr_type").lower()))
+                        mac_dst_2.append("Any {}ly administered {} address".format(temp.get("admin_type").lower(), 
+                            temp.get("dest_addr_type").lower()))
 
                 else:
                     for i in temp:
                         if i.get("addr"):
                             mac_dst_1.append(' or '.join(i.get('addr')))
                         else:
-                            mac_dst_2.append("Any {}ly administered {} address".format(i.get("admin_type").lower(), i.get("dest_addr_type").lower()))
+                            mac_dst_2.append("Any {}ly administered {} address".format(i.get("admin_type").lower(),
+                                 i.get("dest_addr_type").lower()))
 
                 data_final['mac_dst_1'] = mac_dst_1
                 data_final['mac_dst_2'] = mac_dst_2

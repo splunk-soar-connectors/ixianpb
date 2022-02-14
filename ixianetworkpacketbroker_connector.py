@@ -99,7 +99,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 r.status_code, r.text.replace('{', '{{').replace('}', '}}'))
 
         if r.status_code == 401:
-            message = "Error from server. Status Code: {}. Reason: {}. Description: {}".format(r.status_code, resp_json.get('reasonPhrase'), resp_json.get('description'))
+            message = "Error from server. Status Code: {}. Reason: {}. Description: {}".format(r.status_code,
+                 resp_json.get('reasonPhrase'), resp_json.get('description'))
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
     def _process_response(self, r, action_result):
@@ -194,7 +195,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                 'Content-Type': 'application/json'
             })
 
-        ret_val, resp_json = self._make_rest_call_oauth2(url, action_result, verify=verify, headers=headers, params=params, data=data, json=json, method=method)
+        ret_val, resp_json = self._make_rest_call_oauth2(url, action_result, 
+            verify=verify, headers=headers, params=params, data=data, json=json, method=method)
 
         # If token is expired, generate a new token
         msg = action_result.get_message()
@@ -229,7 +231,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             'Authorization': token1
         }
 
-        ret_val, resp_json = self._make_rest_call_oauth2("{}{}".format(self._base_url, TOKEN_URL), action_result, verify=self._verify, headers=headers, method='post')
+        ret_val, resp_json = self._make_rest_call_oauth2("{}{}".format(self._base_url, TOKEN_URL), 
+            action_result, verify=self._verify, headers=headers, method='post')
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -258,7 +261,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
         # make rest call
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, verify=self._verify, params=None, headers=None)
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, 
+            verify=self._verify, params=None, headers=None)
 
         if phantom.is_fail(ret_val):
             self.save_progress("Test Connectivity Failed")
@@ -396,7 +400,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                     return action_result.set_status(phantom.APP_ERROR, "Error while parsing the JSON. Error: {}".format(str(e)))
 
                 if not isinstance(admin_type, list) or not isinstance(destination_addr, list):
-                    return action_result.set_status(phantom.APP_ERROR, "Please provide administration and destination_address input in a valid JSON format")
+                    return action_result.set_status(phantom.APP_ERROR, 
+                        "Please provide administration and destination_address input in a valid JSON format")
 
                 if len(admin_type) != len(destination_addr):
                     return action_result.set_status(phantom.APP_ERROR, "Length of admin_type and destination_addr must be same")
@@ -407,7 +412,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
                     data['dest_addr_type'] = destination_addr[i]
                     mac_list.append(data)
             else:
-                return action_result.set_status(phantom.APP_ERROR, "Please provide value in destination_mac or in adminstration and destination_addr parameter(s)")
+                return action_result.set_status(phantom.APP_ERROR, 
+                    "Please provide value in destination_mac or in adminstration and destination_addr parameter(s)")
 
             if criteria_resp.get(type_map):
                 temp = criteria_resp.get(type_map)
@@ -501,7 +507,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         criteria['criteria'] = criteria_resp
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
 
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, 
+            verify=self._verify, params=params, headers=None, json=criteria, method="put")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -544,7 +551,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             port_1 = param.get(PORT_TYPE_MAP[criteria_type][1])
 
             if not port_1:
-                return action_result.set_status(phantom.APP_ERROR, "Please provide value in {} parameter".format(PORT_TYPE_MAP[criteria_type][1]))
+                return action_result.set_status(phantom.APP_ERROR, 
+                    "Please provide value in {} parameter".format(PORT_TYPE_MAP[criteria_type][1]))
             try:
                 port_1 = json.loads(port_1)
             except Exception as e:
@@ -621,7 +629,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         criteria['criteria'] = criteria_resp
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
 
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, 
+            verify=self._verify, params=params, headers=None, json=criteria, method="put")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -742,7 +751,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         criteria['criteria'] = criteria_resp
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
 
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, 
+            verify=self._verify, params=params, headers=None, json=criteria, method="put")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -772,7 +782,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         criteria['criteria'] = criteria_resp
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
 
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put")
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, 
+            verify=self._verify, params=params, headers=None, json=criteria, method="put")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -796,7 +807,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
 
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="put")
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, 
+            verify=self._verify, params=params, headers=None, json=data, method="put")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -826,7 +838,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
 
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="put")
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, 
+            verify=self._verify, params=params, headers=None, json=data, method="put")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -853,7 +866,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
         # make rest call
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params, headers=None, method="delete")
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, 
+            verify=self._verify, params=params, headers=None, method="delete")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -886,7 +900,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params['allowTemporaryDataLoss'] = allow_temporary_data_loss
 
         # make rest call
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, verify=self._verify, params=params, headers=None, json=data, method="post")
+        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT, 
+            verify=self._verify, params=params, headers=None, json=data, method="post")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -1096,12 +1111,14 @@ if __name__ == '__main__':
     argparser.add_argument('input_test_json', help='Input Test JSON file')
     argparser.add_argument('-u', '--username', help='username', required=False)
     argparser.add_argument('-p', '--password', help='password', required=False)
+    argparser.add_argument('-v', '--verify', action='store_true', help='verify', required=False, default=False)
 
     args = argparser.parse_args()
     session_id = None
 
     username = args.username
     password = args.password
+    verify = args.verify
 
     if (username is not None and password is None):
 
@@ -1114,8 +1131,8 @@ if __name__ == '__main__':
 
             login_url = IxiaNetworkPacketBrokerConnector._get_phantom_base_url() + '/login'
 
-            print ("Accessing the Login page")
-            r = requests.get(login_url, verify=False,  timeout=60)
+            print("Accessing the Login page")
+            r = requests.get(login_url, verify=verify,  timeout=60)
             csrftoken = r.cookies['csrftoken']
 
             data = dict()
@@ -1127,11 +1144,11 @@ if __name__ == '__main__':
             headers['Cookie'] = 'csrftoken=' + csrftoken
             headers['Referer'] = login_url
 
-            print ("Logging into Platform to get the session id")
-            r2 = requests.post(login_url, verify=False, data=data, headers=headers, timeout=60)
+            print("Logging into Platform to get the session id")
+            r2 = requests.post(login_url, verify=verify, data=data, headers=headers, timeout=60)
             session_id = r2.cookies['sessionid']
         except Exception as e:
-            print ("Unable to get session id from the platform. Error: " + str(e))
+            print("Unable to get session id from the platform. Error: " + str(e))
             sys.exit(1)
 
     with open(args.input_test_json) as f:
@@ -1147,6 +1164,6 @@ if __name__ == '__main__':
             connector._set_csrf_info(csrftoken, headers['Referer'])
 
         ret_val = connector._handle_action(json.dumps(in_json), None)
-        print (json.dumps(json.loads(ret_val), indent=4))
+        print(json.dumps(json.loads(ret_val), indent=4))
 
     sys.exit(0)
