@@ -1,16 +1,16 @@
 [comment]: # "Auto-generated SOAR connector documentation"
 # Ixia Network Packet Broker
 
-Publisher: Splunk  
-Connector Version: 1\.0\.0  
+Publisher: Splunk Community  
+Connector Version: 3\.0\.0  
 Product Vendor: Ixia  
 Product Name: Network Packet Broker  
 Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 5\.0\.0  
+Minimum Product Version: 5\.1\.0  
 
 This ixia NPB App supports a variety of actions on the network packet broker platform\. This App has been tested with Vision One
 
-[comment]: # " File: readme.md"
+[comment]: # " File: README.md"
 [comment]: # "  Copyright (c) 2019-2022 Splunk Inc."
 [comment]: # ""
 [comment]: # "Licensed under the Apache License, Version 2.0 (the 'License');"
