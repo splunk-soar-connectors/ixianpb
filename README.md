@@ -2,16 +2,16 @@
 # Ixia Network Packet Broker
 
 Publisher: Splunk  
-Connector Version: 2\.0\.2  
+Connector Version: 1\.0\.0  
 Product Vendor: Ixia  
 Product Name: Network Packet Broker  
 Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 4\.9\.39220  
+Minimum Product Version: 5\.0\.0  
 
 This ixia NPB App supports a variety of actions on the network packet broker platform\. This App has been tested with Vision One
 
 [comment]: # " File: readme.md"
-[comment]: # "  Copyright (c) 2019-2021 Splunk Inc."
+[comment]: # "  Copyright (c) 2019-2022 Splunk Inc."
 [comment]: # ""
 [comment]: # "Licensed under the Apache License, Version 2.0 (the 'License');"
 [comment]: # "you may not use this file except in compliance with the License."
