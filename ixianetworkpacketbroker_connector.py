@@ -1044,6 +1044,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         summary = action_result.update_summary({})
         summary['num_filters'] = len(response)
 
+        self.save_progress("Handle list filters succeeded")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_restart(self, param):
