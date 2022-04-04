@@ -314,6 +314,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
         mac_list = ['mac_src', 'mac_dst', 'mac_src_or_dst', 'mac_flow']
 
+        self.save_progress("Querying MAC address criteria update for the filter")
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -520,6 +521,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
+        self.save_progress("Updated the MAC address criteria for the filter successfully")
         return action_result.set_status(phantom.APP_SUCCESS, "Updated the MAC address criteria for the filter successfully")
 
     def _handle_update_port(self, param):
@@ -536,6 +538,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
         port_list = ['layer4_dst_port', 'layer4_src_port', 'layer4_src_or_dst_port', 'layer4_port_flow']
 
+        self.save_progress("Updating the port criteria for the filter")
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -642,6 +645,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
+        self.save_progress("Updated the port criteria for the filter successfully")
         return action_result.set_status(phantom.APP_SUCCESS, "Updated the port criteria for the filter successfully")
 
     def _handle_update_ip(self, param):
@@ -658,6 +662,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
         ipv4_list = ['ipv4_src', 'ipv4_dst', 'ipv4_src_or_dst', 'ipv4_flow']
 
+        self.save_progress("Updating the IP address criteria for the filter")
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -764,6 +769,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
+        self.save_progress("Updated the IP address criteria for the filter successfully")
         return action_result.set_status(phantom.APP_SUCCESS, "Updated the IP address criteria for the filter successfully")
 
     def _handle_update_operator(self, param):
@@ -777,6 +783,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         params['allowTemporaryDataLoss'] = param.get('allow_temporary_data_loss', False)
 
+        self.save_progress("Querying filter operator update")
         ret_val, criteria_resp = self.fetch_filter_criteria(filter_id, action_result)
         if phantom.is_fail(ret_val):
             return action_result.get_status()
@@ -795,6 +802,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
+        self.save_progress("Filter operator updated successfully")
         return action_result.set_status(phantom.APP_SUCCESS, "Filter operator updated successfully")
 
     def _handle_update_mode(self, param):
@@ -811,6 +819,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
 
+        self.save_progress("Querying filter mode update")
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint,
             verify=self._verify, params=params, headers=None, json=data, method="put")
 
@@ -820,6 +829,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
+        self.save_progress("Filter mode updated successfully")
         return action_result.set_status(phantom.APP_SUCCESS, "Filter mode updated successfully")
 
     def _handle_update_vlan_replacement(self, param):
@@ -842,6 +852,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id)
 
+        self.save_progress("Update filter VLAN replacement settings")
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint,
             verify=self._verify, params=params, headers=None, json=data, method="put")
 
@@ -851,6 +862,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
+        self.save_progress("Filter VLAN replacement settings updated successfully")
         return action_result.set_status(phantom.APP_SUCCESS, "Filter VLAN replacement settings updated successfully")
 
     def _handle_delete_filter(self, param):
@@ -879,6 +891,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Add the response into the data section
         action_result.add_data(response)
 
+        self.save_progress("Filter deleted successfully")
         # For now return Error with a message, in case of success we don't set the message, but use the summary
         return action_result.set_status(phantom.APP_SUCCESS, "Filter deleted successfully")
 
@@ -903,6 +916,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params = {}
         params['allowTemporaryDataLoss'] = allow_temporary_data_loss
 
+        self.save_progress("Create filter")
         # make rest call
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_GET_FILTERS_ENDPOINT,
             verify=self._verify, params=params, headers=None, json=data, method="post")
@@ -912,6 +926,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         action_result.add_data(response)
 
+        self.save_progress("Filter created successfully")
         return action_result.set_status(phantom.APP_SUCCESS, "Filter created successfully")
 
     def _handle_describe_filter(self, param):
@@ -926,6 +941,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         endpoint = "{}/{}".format(IXIA_GET_FILTERS_ENDPOINT, filter_id_or_name)
 
+        self.save_progress("Retrieving filter information")
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params)
 
         if phantom.is_fail(ret_val):
@@ -1004,6 +1020,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         action_result.add_data(response)
 
+        self.save_progress("Successfully retrieved filter information")
         return action_result.set_status(phantom.APP_SUCCESS, "Successfully retrieved filter information")
 
     def _handle_list_filters(self, param):
@@ -1042,6 +1059,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
+        self.save_progress("System restart request sent successfully")
         return action_result.set_status(phantom.APP_SUCCESS, "System restart request sent successfully")
 
     def handle_action(self, param):
