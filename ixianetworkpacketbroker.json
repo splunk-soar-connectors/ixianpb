@@ -12,7 +12,7 @@
     "license": "Copyright (c) 2019-2025 Splunk Inc.",
     "app_version": "3.0.1",
     "python_version": "3",
-    "utctime_updated": "2022-03-14T17:47:31.000000Z",
+    "utctime_updated": "2025-04-28T19:45:17.037626Z",
     "package_name": "phantom_ixianetworkpacketbroker",
     "main_module": "ixianetworkpacketbroker_connector.py",
     "min_phantom_version": "5.1.0",
