@@ -17,6 +17,7 @@
 # Phantom App imports
 import base64
 import json
+from urllib.parse import quote
 
 import phantom.app as phantom
 
@@ -267,7 +268,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def fetch_filter_criteria(self, filter_id, action_result):
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify)
 
@@ -507,7 +508,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             criteria_resp.update({"mac_flow": flow_list})
 
         criteria["criteria"] = criteria_resp
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put"
@@ -628,7 +629,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             criteria_resp.update({"layer4_port_flow": flow_list})
 
         criteria["criteria"] = criteria_resp
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put"
@@ -750,7 +751,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             criteria_resp.update({"ipv4_flow": flow_list})
 
         criteria["criteria"] = criteria_resp
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put"
@@ -782,7 +783,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         criteria_resp.update({"logical_operation": operator})
 
         criteria["criteria"] = criteria_resp
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put"
@@ -808,7 +809,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params["allowTemporaryDataLoss"] = param.get("allow_temporary_data_loss", False)
         data["mode"] = MODE_MAP.get(mode, "")
 
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="put"
@@ -840,7 +841,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         data["vlan_replace_setting"] = vlan_setting
 
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="put"
@@ -868,7 +869,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params = {}
         params["allowTemporaryDataLoss"] = param.get("allow_temporary_data_loss", False)
 
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
         # make rest call
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, method="delete"
@@ -925,7 +926,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params = dict()
         params["allowTemporaryDataLoss"] = param.get("allow_temporary_data_loss", False)
 
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id_or_name}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id_or_name), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params)
 
