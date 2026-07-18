@@ -40,7 +40,7 @@
         "verify_cert": {
             "description": "Verify Server SSL certificate",
             "data_type": "boolean",
-            "default": false,
+            "default": true,
             "order": 3
         }
     },
