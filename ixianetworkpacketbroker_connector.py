@@ -19,6 +19,7 @@ import base64
 import json
 from urllib.parse import quote
 
+import encryption_helper
 import phantom.app as phantom
 
 # Usage of the consts file is recommended
@@ -183,9 +184,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if headers is None:
             headers = {}
 
-        token = self._state.get("access_token", {})
-
-        if not token:
+        if not self._oauth_access_token:
             ret_val = self._get_token(action_result)
             if phantom.is_fail(ret_val):
                 return action_result.get_status(), None
@@ -233,8 +232,18 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
-        self._state["access_token"] = self._res_headers.get("X-Auth-Token")
         self._oauth_access_token = self._res_headers.get("X-Auth-Token")
+
+        if not self._oauth_access_token:
+            return action_result.set_status(phantom.APP_ERROR, "The authentication response did not contain an access token")
+
+        try:
+            self._state["access_token"] = encryption_helper.encrypt(self._oauth_access_token, self.get_asset_id())
+        except Exception as e:
+            self._oauth_access_token = None
+            self._state.pop("access_token", None)
+            return action_result.set_status(phantom.APP_ERROR, f"Unable to securely store the access token: {e!s}")
+
         self.save_state(self._state)
 
         return phantom.APP_SUCCESS
@@ -1074,6 +1083,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Load the state in initialize, use it to store data
         # that needs to be accessed across actions
         self._state = self.load_state()
+        if not isinstance(self._state, dict):
+            self._state = {}
 
         # get the asset config
         config = self.get_config()
@@ -1087,7 +1098,15 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if self._base_url[-1] == "/":
             self._base_url = self._base_url[:-1]
 
-        self._oauth_access_token = self._state.get("access_token", {})
+        encrypted_token = self._state.get("access_token")
+        if encrypted_token:
+            try:
+                self._oauth_access_token = encryption_helper.decrypt(encrypted_token, self.get_asset_id())
+            except Exception as e:
+                # Discard legacy cleartext and invalid encrypted state. A fresh token
+                # will be requested when the connector next makes an API call.
+                self.debug_print(f"Unable to load the stored access token: {e!s}")
+                self._state.pop("access_token", None)
 
         return phantom.APP_SUCCESS
 
