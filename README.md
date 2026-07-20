@@ -1,9 +1,9 @@
 # Ixia Network Packet Broker
 
-Publisher: Splunk Community \
-Connector Version: 3.0.1 \
-Product Vendor: Ixia \
-Product Name: Network Packet Broker \
+Publisher: Splunk Community <br>
+Connector Version: 3.0.1 <br>
+Product Vendor: Ixia <br>
+Product Name: Network Packet Broker <br>
 Minimum Product Version: 5.1.0
 
 This ixia NPB App supports a variety of actions on the network packet broker platform. This App has been tested with Vision One
@@ -64,24 +64,24 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration parameters \
-[delete filter](#action-delete-filter) - Remove a filter from the instance \
-[update mode](#action-update-mode) - Update the mode of a filter \
-[update operator](#action-update-operator) - Update the operator of a filter \
-[update mac](#action-update-mac) - Update the mac address criteria for a filter \
-[update port](#action-update-port) - Update the port criteria of a filter \
-[update ip](#action-update-ip) - Update the IP address criteria of a filter \
-[update vlan replacement](#action-update-vlan-replacement) - Updates the vlan replacement settings of a filter \
-[create filter](#action-create-filter) - Creates a new filter on the instance \
-[list filters](#action-list-filters) - Fetch a list of the filters from the instance \
-[describe filter](#action-describe-filter) - Fetches the details of a specified filter \
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration parameters <br>
+[delete filter](#action-delete-filter) - Remove a filter from the instance <br>
+[update mode](#action-update-mode) - Update the mode of a filter <br>
+[update operator](#action-update-operator) - Update the operator of a filter <br>
+[update mac](#action-update-mac) - Update the mac address criteria for a filter <br>
+[update port](#action-update-port) - Update the port criteria of a filter <br>
+[update ip](#action-update-ip) - Update the IP address criteria of a filter <br>
+[update vlan replacement](#action-update-vlan-replacement) - Updates the vlan replacement settings of a filter <br>
+[create filter](#action-create-filter) - Creates a new filter on the instance <br>
+[list filters](#action-list-filters) - Fetch a list of the filters from the instance <br>
+[describe filter](#action-describe-filter) - Fetches the details of a specified filter <br>
 [restart](#action-restart) - Restarts Ixia vision one instance
 
 ## action: 'test connectivity'
 
 Validate the asset configuration for connectivity using supplied configuration parameters
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -96,7 +96,7 @@ No Output
 
 Remove a filter from the instance
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -123,7 +123,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Update the mode of a filter
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -152,7 +152,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Update the operator of a filter
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -181,7 +181,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Update the mac address criteria for a filter
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -222,7 +222,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Update the port criteria of a filter
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -259,7 +259,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Update the IP address criteria of a filter
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -296,7 +296,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Updates the vlan replacement settings of a filter
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -327,7 +327,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Creates a new filter on the instance
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -354,7 +354,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Fetch a list of the filters from the instance
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -380,7 +380,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Fetches the details of a specified filter
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -507,7 +507,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Restarts Ixia vision one instance
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -529,7 +529,7 @@ ______________________________________________________________________
 
 Auto-generated Splunk SOAR Connector documentation.
 
-Copyright 2025 Splunk Inc.
+Copyright 2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

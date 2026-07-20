@@ -1,6 +1,6 @@
 # File: ixianetworkpacketbroker_connector.py
 #
-# Copyright (c) 2019-2025 Splunk Inc.
+# Copyright (c) 2019-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 # Phantom App imports
 import base64
 import json
+from urllib.parse import quote
 
+import encryption_helper
 import phantom.app as phantom
 
 # Usage of the consts file is recommended
@@ -182,9 +184,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if headers is None:
             headers = {}
 
-        token = self._state.get("access_token", {})
-
-        if not token:
+        if not self._oauth_access_token:
             ret_val = self._get_token(action_result)
             if phantom.is_fail(ret_val):
                 return action_result.get_status(), None
@@ -232,8 +232,18 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
 
-        self._state["access_token"] = self._res_headers.get("X-Auth-Token")
         self._oauth_access_token = self._res_headers.get("X-Auth-Token")
+
+        if not self._oauth_access_token:
+            return action_result.set_status(phantom.APP_ERROR, "The authentication response did not contain an access token")
+
+        try:
+            self._state["access_token"] = encryption_helper.encrypt(self._oauth_access_token, self.get_asset_id())
+        except Exception as e:
+            self._oauth_access_token = None
+            self._state.pop("access_token", None)
+            return action_result.set_status(phantom.APP_ERROR, f"Unable to securely store the access token: {e!s}")
+
         self.save_state(self._state)
 
         return phantom.APP_SUCCESS
@@ -267,7 +277,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def fetch_filter_criteria(self, filter_id, action_result):
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify)
 
@@ -507,7 +517,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             criteria_resp.update({"mac_flow": flow_list})
 
         criteria["criteria"] = criteria_resp
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put"
@@ -628,7 +638,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             criteria_resp.update({"layer4_port_flow": flow_list})
 
         criteria["criteria"] = criteria_resp
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put"
@@ -750,7 +760,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
             criteria_resp.update({"ipv4_flow": flow_list})
 
         criteria["criteria"] = criteria_resp
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put"
@@ -782,7 +792,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         criteria_resp.update({"logical_operation": operator})
 
         criteria["criteria"] = criteria_resp
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=criteria, method="put"
@@ -808,7 +818,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params["allowTemporaryDataLoss"] = param.get("allow_temporary_data_loss", False)
         data["mode"] = MODE_MAP.get(mode, "")
 
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="put"
@@ -840,7 +850,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         data["vlan_replace_setting"] = vlan_setting
 
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, json=data, method="put"
@@ -868,7 +878,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params = {}
         params["allowTemporaryDataLoss"] = param.get("allow_temporary_data_loss", False)
 
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id), safe='')}"
         # make rest call
         ret_val, response = self._make_rest_call_helper_oauth2(
             action_result, endpoint, verify=self._verify, params=params, headers=None, method="delete"
@@ -925,7 +935,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         params = dict()
         params["allowTemporaryDataLoss"] = param.get("allow_temporary_data_loss", False)
 
-        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{filter_id_or_name}"
+        endpoint = f"{IXIA_GET_FILTERS_ENDPOINT}/{quote(str(filter_id_or_name), safe='')}"
 
         ret_val, response = self._make_rest_call_helper_oauth2(action_result, endpoint, verify=self._verify, params=params)
 
@@ -1073,6 +1083,8 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         # Load the state in initialize, use it to store data
         # that needs to be accessed across actions
         self._state = self.load_state()
+        if not isinstance(self._state, dict):
+            self._state = {}
 
         # get the asset config
         config = self.get_config()
@@ -1086,7 +1098,15 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if self._base_url[-1] == "/":
             self._base_url = self._base_url[:-1]
 
-        self._oauth_access_token = self._state.get("access_token", {})
+        encrypted_token = self._state.get("access_token")
+        if encrypted_token:
+            try:
+                self._oauth_access_token = encryption_helper.decrypt(encrypted_token, self.get_asset_id())
+            except Exception as e:
+                # Discard legacy cleartext and invalid encrypted state. A fresh token
+                # will be requested when the connector next makes an API call.
+                self.debug_print(f"Unable to load the stored access token: {e!s}")
+                self._state.pop("access_token", None)
 
         return phantom.APP_SUCCESS
 
