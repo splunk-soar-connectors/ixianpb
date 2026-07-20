@@ -1,7 +1,7 @@
 # Ixia Network Packet Broker
 
 Publisher: Splunk Community <br>
-Connector Version: 3.0.1 <br>
+Connector Version: 3.0.2 <br>
 Product Vendor: Ixia <br>
 Product Name: Network Packet Broker <br>
 Minimum Product Version: 5.1.0
