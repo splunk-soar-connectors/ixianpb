@@ -180,6 +180,10 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         response obtained by making an API call
         """
 
+        path = endpoint.partition("?")[0]
+        if any(segment in {".", ".."} for segment in path.split("/")):
+            return action_result.set_status(phantom.APP_ERROR, "Endpoint identifiers cannot be dot segments"), None
+
         url = f"{self._base_url}{endpoint}"
         if headers is None:
             headers = {}
@@ -225,7 +229,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
 
         headers = {"Authorization": token1}
 
-        ret_val, resp_json = self._make_rest_call_oauth2(
+        ret_val, _resp_json = self._make_rest_call_oauth2(
             f"{self._base_url}{TOKEN_URL}", action_result, verify=self._verify, headers=headers, method="post"
         )
 
@@ -265,7 +269,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         if phantom.is_fail(ret_val):
             return action_result.get_status()
         # make rest call
-        ret_val, response = self._make_rest_call_helper_oauth2(
+        ret_val, _response = self._make_rest_call_helper_oauth2(
             action_result, IXIA_GET_FILTERS_ENDPOINT, verify=self._verify, params=None, headers=None
         )
 
@@ -1044,7 +1048,7 @@ class IxiaNetworkPacketBrokerConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
 
         # make rest call
-        ret_val, response = self._make_rest_call_helper_oauth2(action_result, IXIA_RESTART_ENDPOINT, verify=self._verify, method="post")
+        ret_val, _response = self._make_rest_call_helper_oauth2(action_result, IXIA_RESTART_ENDPOINT, verify=self._verify, method="post")
 
         if phantom.is_fail(ret_val):
             return action_result.get_status()
